@@ -3,7 +3,7 @@ import request = require("request-promise-native");
 import { QiitaParameter } from "./interface";
 
 interface QiitaApiPostData {
-  json: any;
+    json: any;
 }
 
 interface QiitaApiResponceData {
@@ -17,8 +17,8 @@ interface QiitaApiResponceData {
      * (urlエラー)：404
      * (サーバーエラー)：500
      */
-  statuscode: string;
-  body: any; //object?
+    statuscode: string;
+    body: any; //object?
 }
 
 type HttpMethod = "POST" | "GET" | "PATCH";
@@ -32,14 +32,19 @@ export class ConnectQiitaApi {
      * @param body post通信の場合に送信するデータ
      * @returns
      */
-    private static async sendAPI(method: HttpMethod, url: string, qiitaAccesstoken : string , body?: QiitaApiPostData): Promise<QiitaApiResponceData> {
+    private static async sendAPI(
+        method: HttpMethod,
+        url: string,
+        qiitaAccesstoken: string,
+        body?: QiitaApiPostData
+    ): Promise<QiitaApiResponceData> {
         url = "https://qiita.com" + url;
         let options: request.RequestPromiseOptions = {
             headers: {
                 // eslint-disable-next-line
                 "Content-type": "application/json",
                 // eslint-disable-next-line
-                "Authorization": "Bearer " + qiitaAccesstoken,
+                Authorization: "Bearer " + qiitaAccesstoken,
             },
         };
         if (method === "GET") {
@@ -49,29 +54,30 @@ export class ConnectQiitaApi {
             options.json = body?.json;
         }
         console.log(options);
-        const res : QiitaApiResponceData = await request(url, options)
-            .then(html => {
-                const ret : QiitaApiResponceData = {
-                    statuscode : "200",
-                    body : {},
+        const res: QiitaApiResponceData = await request(url, options)
+            .then((html) => {
+                const ret: QiitaApiResponceData = {
+                    statuscode: "200",
+                    body: {},
                 };
-                if(method === "GET"){
-                    try{
+                if (method === "GET") {
+                    try {
                         ret.body = JSON.parse(html);
-                    }catch(e){
+                    } catch (e) {
                         console.log(html);
                         ret.statuscode = "-100"; // エラーステータス
                     }
-                }else{
+                } else {
                     ret.body = html;
                 }
                 return ret;
-            }).catch(error => {
+            })
+            .catch((error) => {
                 console.log("SendAPI Error : ");
                 console.log(error);
-                const ret : QiitaApiResponceData = {
-                    statuscode : error.statusCode + "",
-                    body : null,
+                const ret: QiitaApiResponceData = {
+                    statuscode: error.statusCode + "",
+                    body: null,
                 };
                 return ret;
             });
@@ -81,15 +87,15 @@ export class ConnectQiitaApi {
     /**
      * アクセストークンに基づいたユーザー情報を返します。
      */
-    public static async authenticatedUser(qiitaAccesstoken : string) : Promise<qiita_types.AuthenticatedUser> {
-        const method : HttpMethod = "GET";
+    public static async authenticatedUser(qiitaAccesstoken: string): Promise<qiita_types.AuthenticatedUser> {
+        const method: HttpMethod = "GET";
         const api = "/api/v2/authenticated_user";
 
-        const res = await ConnectQiitaApi.sendAPI(method,api,qiitaAccesstoken);
+        const res = await ConnectQiitaApi.sendAPI(method, api, qiitaAccesstoken);
 
-        if(res.statuscode === "200"){
+        if (res.statuscode === "200") {
             return res.body as qiita_types.AuthenticatedUser;
-        }else{
+        } else {
             console.error("status code : " + res.statuscode);
             throw new Error(res.statuscode);
         }
@@ -101,20 +107,20 @@ export class ConnectQiitaApi {
      * @returns タグデータ
      * TODO : tag_nameが空文字だった場合は-200のエラーを通過するので引数除外するかnullを返すか
      */
-    public static async findTag(qiitaAccesstoken : string, tagName : string) : Promise<qiita_types.Tag> {
-        const method : HttpMethod = "GET";
+    public static async findTag(qiitaAccesstoken: string, tagName: string): Promise<qiita_types.Tag> {
+        const method: HttpMethod = "GET";
         const api = "/api/v2/tags/";
-        const res = await ConnectQiitaApi.sendAPI(method,api + encodeURIComponent(tagName),qiitaAccesstoken);
+        const res = await ConnectQiitaApi.sendAPI(method, api + encodeURIComponent(tagName), qiitaAccesstoken);
 
-        if(res.statuscode === "200"){
-            if(Array.isArray(res.body)){
+        if (res.statuscode === "200") {
+            if (Array.isArray(res.body)) {
                 // タグ単体指定の場合は配列は戻ってこない
                 console.error("return json is only object, but return array.");
                 throw new Error("-200");
-            }else{
+            } else {
                 return res.body as qiita_types.Tag;
             }
-        }else{
+        } else {
             console.error("status code : " + res.statuscode);
             throw new Error(res.statuscode);
         }
@@ -126,21 +132,23 @@ export class ConnectQiitaApi {
      * @param qiitaPrm
      * @returns
      */
-    public static async postNewItem(qiitaAccesstoken : string, body : string, qiitaPrm : QiitaParameter ) : Promise<qiita_types.Item> {
-        const method : HttpMethod = "POST";
+    public static async postNewItem(qiitaAccesstoken: string, body: string, qiitaPrm: QiitaParameter): Promise<qiita_types.Item> {
+        const method: HttpMethod = "POST";
         const api = "/api/v2/items";
         const senddata = {
-            body : body,
-            private : qiitaPrm.private === false ? false : true,
-            tags : qiitaPrm.tags.map(e => {return {name : e};}),
-            title : qiitaPrm.title,
-            tweet : qiitaPrm.istweet,
+            body: body,
+            private: qiitaPrm.private === false ? false : true,
+            tags: qiitaPrm.tags.map((e) => {
+                return { name: e };
+            }),
+            title: qiitaPrm.title,
+            tweet: qiitaPrm.istweet,
         };
-        const res = await ConnectQiitaApi.sendAPI(method,api,qiitaAccesstoken,{json : senddata});
+        const res = await ConnectQiitaApi.sendAPI(method, api, qiitaAccesstoken, { json: senddata });
 
-        if(res.statuscode === "200"){
+        if (res.statuscode === "200") {
             return res.body as qiita_types.Item;
-        }else{
+        } else {
             console.error("status code : " + res.statuscode);
             throw new Error(res.statuscode);
         }
@@ -152,20 +160,22 @@ export class ConnectQiitaApi {
      * @param qiitaPrm
      * @returns
      */
-    public static async postUpdateItem(qiitaAccesstoken : string, body : string, qiitaPrm : QiitaParameter ) : Promise<qiita_types.Item> {
-        const method : HttpMethod = "PATCH";
+    public static async postUpdateItem(qiitaAccesstoken: string, body: string, qiitaPrm: QiitaParameter): Promise<qiita_types.Item> {
+        const method: HttpMethod = "PATCH";
         const api = "/api/v2/items/" + qiitaPrm.id;
         const senddata = {
-            body : body,
-            private : qiitaPrm.private === false ? false : true,
-            tags : qiitaPrm.tags.map(e => {return {name : e};}),
-            title : qiitaPrm.title,
+            body: body,
+            private: qiitaPrm.private === false ? false : true,
+            tags: qiitaPrm.tags.map((e) => {
+                return { name: e };
+            }),
+            title: qiitaPrm.title,
         };
-        const res = await ConnectQiitaApi.sendAPI(method,api,qiitaAccesstoken,{json : senddata});
+        const res = await ConnectQiitaApi.sendAPI(method, api, qiitaAccesstoken, { json: senddata });
 
-        if(res.statuscode === "200"){
+        if (res.statuscode === "200") {
             return res.body as qiita_types.Item;
-        }else{
+        } else {
             console.error("status code : " + res.statuscode);
             throw new Error(res.statuscode);
         }

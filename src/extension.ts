@@ -3,7 +3,7 @@
 import * as vscode from "vscode";
 import { qiitaPost } from "./post";
 import { setTemplete } from "./set_templete";
-import {checkExtensionsUpdate} from "./object/check_update";
+import { checkExtensionsUpdate } from "./object/check_update";
 
 /**
  * このメソッドは、拡張機能がアクティブ化されたときに呼び出されます

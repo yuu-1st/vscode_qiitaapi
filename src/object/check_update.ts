@@ -32,7 +32,7 @@ function isMajorUpdate(previousVersion: string, currentVersion: string) {
  * @param currentVersion
  * @returns
  */
- function isMinorUpdate(previousVersion: string, currentVersion: string) {
+function isMinorUpdate(previousVersion: string, currentVersion: string) {
     //rain-check for malformed string
     if (previousVersion.indexOf(".") === -1) {
         return true;
@@ -40,16 +40,14 @@ function isMajorUpdate(previousVersion: string, currentVersion: string) {
     //returns int array [1,1,1] i.e. [major,minor,patch]
     var previousVerArr = previousVersion.split(".").map(Number);
     var currentVerArr = currentVersion.split(".").map(Number);
-    if(currentVerArr[1] === 0 && isMajorUpdate(previousVersion,currentVersion) === true){
+    if (currentVerArr[1] === 0 && isMajorUpdate(previousVersion, currentVersion) === true) {
         return true;
-    }else if (currentVerArr[1] > previousVerArr[1]) {
+    } else if (currentVerArr[1] > previousVerArr[1]) {
         return true;
     } else {
         return false;
     }
 }
-
-
 
 export async function checkExtensionsUpdate(context: vscode.ExtensionContext) {
     /** 過去のバージョンを取得 */
@@ -60,7 +58,7 @@ export async function checkExtensionsUpdate(context: vscode.ExtensionContext) {
     context.globalState.update(extensionId, currentVersion);
     if (previousVersion === undefined || isMinorUpdate(previousVersion, currentVersion)) {
         //show whats new notificatin:
-        const actions = [{ title: "更新内容の表示" },{ title: "閉じる" }];
+        const actions = [{ title: "更新内容の表示" }, { title: "閉じる" }];
         const result = await vscode.window.showInformationMessage(
             `vscode_qiitaapi を v${currentVersion} にアップデートしました。`,
             ...actions
