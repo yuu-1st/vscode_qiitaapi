@@ -58,6 +58,7 @@ Preferences : Open user settingsから開くユーザー設定の項目で設定
 |-|-|
 |vscode_qiitaapi.accesstoken|qiitaのアクセストークンを設定します。settings.jsonに記述される値のため、ワークスペースに保存する場合はgit等の扱いに注意する必要があります。|
 |vscode_qiitaapi.templetedefault|qiita テンプレートのデフォルト値を設定します。|
+|vscode_qiitaapi.geturl|mdファイルに設定されているqiita テンプレートを元に記事のurlを取得し、クリップボードに貼り付けます。urlはurl単体と、markdownに直接貼り付けることができる２種類が取得できます。|
 ---
 
 <br>
@@ -80,13 +81,21 @@ Preferences : Open user settingsから開くユーザー設定の項目で設定
 
 - タグ候補の表示
 
-- 投稿済みのファイルからurlの取得
-
 - テンプレートの開始/終了記号を`//**********`から`---`に変更。これはqiitaのMarkdownにも使われている方法で、かつMarkdown的にはテーブルとして認識されるため、邪魔になりにくいと推測できるため。
 
 <br>
 
 # リリースノート
+
+## 0.3.0
+
+### 新規機能
+
+・qiita テンプレートを元に、urlを取得できるようになりました。urlのみと、markdownに最適化されたurlの2通り取得できます。
+
+### 修正機能
+
+・v0.2.1にて、記事のidが取得できず、保存されない不具合を修正
 
 ## 0.2.1
 

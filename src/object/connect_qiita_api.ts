@@ -162,7 +162,7 @@ export class ConnectQiitaApi {
      */
     public static async postUpdateItem(qiitaAccesstoken: string, body: string, qiitaPrm: QiitaParameter): Promise<qiita_types.Item> {
         const method: HttpMethod = "PATCH";
-        const api = "/api/v2/items/" + qiitaPrm.id;
+        const api = "/api/v2/items/" + qiitaPrm.ID;
         const senddata = {
             body: body,
             private: qiitaPrm.private === false ? false : true,

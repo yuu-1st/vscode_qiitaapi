@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { readQiitaParameter, addQiitaParameter, createQiitaParameterTemplete } from "./object/qiita_parameter";
+import { readQiitaParameter, addQiitaParameter, createQiitaParameterTemplete, getUrlFromQiitaParameter } from "./object/qiita_parameter";
 import * as set_manag from "./object/settings_management";
 import { ConnectQiitaApi } from "./object/connect_qiita_api";
 import * as qiita_types from "./object/qiita-types";
@@ -99,7 +99,7 @@ export async function qiitaPost() {
 
         // 入力内容を確認し、投稿する
         if (qiitaPrm) {
-            if (qiitaPrm.id) {
+            if (qiitaPrm.ID) {
                 try {
                     await ConnectQiitaApi.postUpdateItem(qiitaAccesstoken, sendbody, qiitaPrm);
                 } catch (e) {
@@ -114,13 +114,16 @@ export async function qiitaPost() {
                     connectionExceptionMessage(e);
                     return;
                 }
-                qiitaPrm.id = receivedata.id;
+                qiitaPrm.ID = receivedata.id;
             }
             vscode.window.showInformationMessage("Qiitaに投稿しました。", "表示").then((e) => {
                 if (e === "表示") {
-                    vscode.env.openExternal(
-                        vscode.Uri.parse("https://qiita.com/" + (qiitaPrm?.private ? "private" : "items") + "/" + qiitaPrm?.id)
-                    );
+                    if(qiitaPrm){
+                        const url = getUrlFromQiitaParameter(qiitaPrm) ?? "";
+                        vscode.env.openExternal(
+                            vscode.Uri.parse(url)
+                        );
+                    }
                 }
             });
 

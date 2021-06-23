@@ -13,7 +13,8 @@
   ],
   "activationEvents": [
     "onCommand:vscode_qiitaapi.post",
-    "onCommand:vscode_qiitaapi.set_templete"
+    "onCommand:vscode_qiitaapi.set_templete",
+    "onCommand:vscode_qiitaapi.geturl"
   ],
   "repository": {
     "type": "git",
@@ -29,6 +30,10 @@
       {
         "command": "vscode_qiitaapi.set_templete",
         "title": "qiita テンプレートを付与する"
+      },
+      {
+        "command": "vscode_qiitaapi.geturl",
+        "title": "qiita 記事のurlを取得する"
       }
     ],
     "configuration": [
@@ -85,6 +90,7 @@
     "vscode-test": "^1.4.0"
   },
   "dependencies": {
+    "clipboardy": "^2.3.0",
     "request-promise-native": "^1.0.9"
   }
 }

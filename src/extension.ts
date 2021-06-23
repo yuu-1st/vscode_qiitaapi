@@ -4,6 +4,7 @@ import * as vscode from "vscode";
 import { qiitaPost } from "./post";
 import { setTemplete } from "./set_templete";
 import { checkExtensionsUpdate } from "./object/check_update";
+import { articleUrl } from "./get_articleurl";
 
 /**
  * このメソッドは、拡張機能がアクティブ化されたときに呼び出されます
@@ -23,7 +24,12 @@ export function activate(context: vscode.ExtensionContext) {
      */
     const commandSetTemplete = vscode.commands.registerCommand("vscode_qiitaapi.set_templete", setTemplete);
 
-    context.subscriptions.push(commandQiitaPost, commandSetTemplete);
+    /**
+     * 投稿済みの記事からurlを取得する。
+     */
+    const commandGetUrl = vscode.commands.registerCommand("vscode_qiitaapi.geturl", articleUrl);
+
+    context.subscriptions.push(commandQiitaPost, commandSetTemplete, commandGetUrl);
 
     // アップデートしたかどうかのチェック
     checkExtensionsUpdate(context);
