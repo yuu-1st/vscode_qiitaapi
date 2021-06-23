@@ -1,3 +1,5 @@
+[vscode marketplace](https://marketplace.visualstudio.com/items?itemName=yuuyu.vscode-qiitaapi)
+
 # vscode-qiitaapi README
 
 vscodeからqiitaに投稿することができる拡張機能です。

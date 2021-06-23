@@ -15,6 +15,10 @@
     "onCommand:vscode_qiitaapi.post",
     "onCommand:vscode_qiitaapi.set_templete"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yuu-1st/vscode_qiitaapi"
+  },
   "main": "./dist/main.js",
   "contributes": {
     "commands": [
