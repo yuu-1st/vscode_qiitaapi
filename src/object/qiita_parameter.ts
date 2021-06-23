@@ -5,6 +5,7 @@ import { QiitaParameter, TypeQiitaTempleteDefault } from "./interface";
 /**
  * qiita記事のパラメータが埋め込まれているか確認し、埋め込まれている場合は取得します。
  * @param editor 確認したいファイルエディタ
+ * @param isIdErrorThenContinue 入力値にエラーがあった場合、読み込みを続行するかどうか。既定値：false
  * @returns qiita_parameterインターフェース
  */
 export function readQiitaParameter(editor: vscode.TextEditor, isIdErrorThenContinue: boolean = false): QiitaParameter {
@@ -12,7 +13,8 @@ export function readQiitaParameter(editor: vscode.TextEditor, isIdErrorThenConti
     const keyRegularExpression = /^\/\/\*{10,}$/;
     /** 戻り値となるオブジェクト */
     const returnvalue: QiitaParameter = {
-        id: null,
+        // eslint-disable-next-line
+        ID: null,
         private: null,
         title: null,
         tags: [],
@@ -58,7 +60,7 @@ export function readQiitaParameter(editor: vscode.TextEditor, isIdErrorThenConti
                 if (strBefore[1] === "ID") {
                     if (strAfter.length > 0) {
                         try {
-                            returnvalue.id = checkAndInsertQiitaId(strAfter);
+                            returnvalue.ID = checkAndInsertQiitaId(strAfter);
                         } catch (e) {
                             vscode.window.showErrorMessage("qiita_idは0-9かa-fの20文字で構成されている必要があります.");
                             if (!isIdErrorThenContinue) {
@@ -168,7 +170,7 @@ export async function addQiitaParameter(editor: vscode.TextEditor, qiitaPrm: Qii
         const pubTweeted: string = "public(公開)・twitterに投稿をする";
         let choices: string[] = [pri, pub];
         if (qiitaPrm.istweet === null) {
-            if (qiitaPrm.id) {
+            if (qiitaPrm.ID) {
                 qiitaPrm.istweet = false;
             } else {
                 choices = [pri, pubNoTweet, pubTweeted];
@@ -291,5 +293,18 @@ export function addQiitaParameterToTempleteDefault(qiitaPrm: QiitaParameter, _de
         } else if (_default === "private" || _default === "public but no tweet") {
             qiitaPrm.istweet = false;
         }
+    }
+}
+
+/**
+ * qiita パラメータからurlを生成し、返します。
+ * @param qiitaPrm チェックするqiita パラメータ
+ * @returns
+ */
+export function getUrlFromQiitaParameter(qiitaPrm : QiitaParameter) : string | null {
+    if(qiitaPrm.ID){
+        return "https://qiita.com/" + (qiitaPrm?.private ? "private" : "items") + "/" + qiitaPrm?.ID;
+    }else{
+        return null;
     }
 }

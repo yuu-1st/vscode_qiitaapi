@@ -3,7 +3,8 @@
  */
 export interface QiitaParameter {
     /** qiita記事のID */
-    id: string | null;
+    // eslint-disable-next-line
+    ID: string | null;
     /** 限定公開か、公開か */
     private: boolean | null;
     /** 記事のタイトル */
