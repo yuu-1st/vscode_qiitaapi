@@ -1,0 +1,86 @@
+{
+  "name": "vscode-qiitaapi",
+  "displayName": "vscode_qiitaapi",
+  "description": "use qiita api to vscode",
+  "version": "0.2.0",
+  "publisher": "yuuyu",
+  "engines": {
+    "vscode": "^1.46.0"
+  },
+  "icon": "img/icon.png",
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:vscode_qiitaapi.post",
+    "onCommand:vscode_qiitaapi.set_templete"
+  ],
+  "main": "./dist/main.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "vscode_qiitaapi.post",
+        "title": "qiitaに投稿する"
+      },
+      {
+        "command": "vscode_qiitaapi.set_templete",
+        "title": "qiita テンプレートを付与する"
+      }
+    ],
+    "configuration": [
+      {
+        "title": "vscode_qiitaapi",
+        "properties": {
+          "vscode_qiitaapi.accesstoken": {
+            "type": "string",
+            "default": "",
+            "description": "qiitaのアクセストークンを設定します。\n注意：setting.jsonに値が直接記述されるため、ワークスペースに保存する場合はgit等の使用にご注意ください。"
+          },
+          "vscode_qiitaapi.templetedefault": {
+            "type": "string",
+            "default": "no_use",
+            "enum": [
+              "private",
+              "public and tweet",
+              "public but no tweet",
+              "no_use"
+            ],
+            "enumDescriptions": [
+              "限定公開",
+              "全体公開かつ投稿時にツイート",
+              "全体公開でツイートなし",
+              "デフォルトは入力しない"
+            ],
+            "description": "qiita テンプレートを付与する際にデフォルト値をセットします。"
+          }
+        }
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run -S esbuild-base -- --minify",
+    "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=dist/main.js --external:vscode --format=cjs --platform=node",
+    "esbuild": "npm run -S esbuild-base -- --sourcemap",
+    "esbuild-watch": "npm run -S esbuild-base -- --sourcemap --watch",
+    "test-compile": "tsc -p ./"
+  },
+  "devDependencies": {
+    "@types/glob": "^7.1.3",
+    "@types/mocha": "^8.0.0",
+    "@types/node": "^14.0.27",
+    "@types/request-promise-native": "^1.0.17",
+    "@types/vscode": "^1.46.0",
+    "@typescript-eslint/eslint-plugin": "^3.8.0",
+    "@typescript-eslint/parser": "^3.8.0",
+    "esbuild": "^0.11.20",
+    "eslint": "^7.29.0",
+    "glob": "^7.1.6",
+    "mocha": "^8.1.3",
+    "ts-node": "^10.0.0",
+    "typescript": "^4.0.2",
+    "vscode-test": "^1.4.0"
+  },
+  "dependencies": {
+    "request-promise-native": "^1.0.9"
+  }
+}

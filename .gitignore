@@ -1,0 +1,16 @@
+# node
+node_modules
+
+# output
+/out/
+/dist/
+
+# others
+*.vsix
+test.php
+*.svg
+.vscode-test/
+.DS_Store
+/qiita_schema_ja.json
+/qiita-types.d.ts
+/vsc-extension-quickstart.md
