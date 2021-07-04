@@ -77,7 +77,7 @@ export function readQiitaParameter(editor: vscode.TextEditor, isIdErrorThenConti
                         vscode.window.showErrorMessage(`titleは255文字までしか設定できません。：${strAfter}`);
                     }
                 } else if (strBefore[1] === "tags") {
-                    returnvalue.tags = strAfter.split(",");
+                    returnvalue.tags = strAfter.split(/[,\s]+/);
                     if (returnvalue.tags.length > 5) {
                         vscode.window.showErrorMessage(`Tagsは5つまでしか設定できません。6つ目以降は無視されます。`);
                         returnvalue.tags = returnvalue.tags.slice(0, 5);
