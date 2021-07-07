@@ -26,3 +26,14 @@ export const arrayQiitatempleteDefault = ["private", "public and tweet", "public
  * qiita テンプレートのデフォルト値を扱うtypeです。
  */
 export type TypeQiitaTempleteDefault = typeof arrayQiitatempleteDefault[number];
+
+
+/**
+ * qiita テンプレートの区切り文字を扱う値群です
+ */
+ export const arrayQiitaTempleteDelimiter = ["horizon", "comment"] as const;
+
+ /**
+  * qiita テンプレートの区切り文字を扱うtypeです。
+  */
+ export type TypeQiitaTempleteDelimiter = typeof arrayQiitaTempleteDelimiter[number];

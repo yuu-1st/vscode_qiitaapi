@@ -24,6 +24,17 @@ export function checkQiitaAccesstoken(): string | null {
 export function qiitaTempleteSetDefault(): interfaces.TypeQiitaTempleteDefault | null {
     const templetedefault: string = vscode.workspace.getConfiguration("vscode_qiitaapi").templetedefault;
 
-    console.log("templetedefault : " + templetedefault);
+//    console.log("templetedefault : " + templetedefault);
     return interfaces.arrayQiitatempleteDefault.find((e) => e === templetedefault) ?? null;
+}
+
+/**
+ * vscode_qiitaapi.templeteDelimiterにセットしている値を返します。セットされていない場合はnullを返します。
+ * @returns
+ */
+ export function qiitaTempleteGetDelimiter(): interfaces.TypeQiitaTempleteDelimiter | null {
+    const templeteDelimiter: string = vscode.workspace.getConfiguration("vscode_qiitaapi").templeteDelimiter;
+
+    console.log("templetedefault : " + templeteDelimiter);
+    return interfaces.arrayQiitaTempleteDelimiter.find((e) => e === templeteDelimiter) ?? null;
 }

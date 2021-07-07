@@ -61,6 +61,19 @@
               "デフォルトは入力しない"
             ],
             "description": "qiita テンプレートを付与する際にデフォルト値をセットします。"
+          },
+          "vscode_qiitaapi.templeteDelimiter": {
+            "type": "string",
+            "default": "comment",
+            "enum": [
+              "horizon",
+              "comment"
+            ],
+            "enumDescriptions": [
+              "---からなる文字列",
+              "//**********からなる文字列"
+            ],
+            "description": "qiita テンプレートの区切り文字を指定します。デフォルトはcommentですが、バージョンアップでhorizonに変更されます"
           }
         }
       }

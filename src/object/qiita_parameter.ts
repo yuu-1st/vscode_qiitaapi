@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import { documentRead } from "./file_operating";
 import { QiitaParameter, TypeQiitaTempleteDefault } from "./interface";
+import { qiitaTempleteGetDelimiter } from "./settings_management";
 
 /**
  * qiita記事のパラメータが埋め込まれているか確認し、埋め込まれている場合は取得します。
@@ -10,7 +11,7 @@ import { QiitaParameter, TypeQiitaTempleteDefault } from "./interface";
  */
 export function readQiitaParameter(editor: vscode.TextEditor, isIdErrorThenContinue: boolean = false): QiitaParameter {
     /** 開始/終了の目印となる文字列の正規表現。ちなみに「//**(*は最低10)」という文字列 */
-    const keyRegularExpression = /^\/\/\*{10,}$/;
+    const keyRegularExpression = /^\/\/\*{10,}$|^---$/;
     /** 戻り値となるオブジェクト */
     const returnvalue: QiitaParameter = {
         // eslint-disable-next-line
@@ -243,9 +244,9 @@ export function createQiitaParameterTemplete(qiitaPrm: QiitaParameter | null): s
     /** SetKeysで最大の文字数 */
     const maxlength: number = Math.max(...setKeys.map((e) => e.length));
     /** 開始及び終了のライン */
-    const startAndEndMark = "//" + "*".repeat(20);
+    const startAndEndMark = qiitaTempleteGetDelimiter() === "horizon" ? "---" : "//" + "*".repeat(20);
     /** アスタリスクが必要か */
-    const needAsterisk = true;
+    const needAsterisk : boolean = qiitaTempleteGetDelimiter() === "horizon" ? false : true;
 
     let returnvalue = startAndEndMark;
 
