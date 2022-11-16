@@ -3,15 +3,15 @@ import * as vscode from "vscode";
 /**
  * ドキュメントを読み取ります。
  * @param doc
- * @param startlen 読み取り開始の行
- * @param endlen 読み取り終了の行
+ * @param startLen 読み取り開始の行
+ * @param endLen 読み取り終了の行
  * @returns
  */
-export function documentRead(doc: vscode.TextDocument, startlen: number = 0, endlen: number = doc.lineCount): string {
+export function documentRead(doc: vscode.TextDocument, startLen: number = 0, endLen: number = doc.lineCount): string {
     /** 先頭箇所の取得 */
-    const topPos = new vscode.Position(startlen, 0);
+    const topPos = new vscode.Position(startLen, 0);
     /** 最終箇所の取得 */
-    const lastPos = new vscode.Position(endlen, 0);
+    const lastPos = new vscode.Position(endLen, 0);
     /** ポジションを選択する */
     const curSelection = new vscode.Selection(topPos, lastPos);
     /** 全体を取得 */
@@ -24,15 +24,15 @@ export function documentRead(doc: vscode.TextDocument, startlen: number = 0, end
  * ドキュメントに書き込みます。
  * @param edit 書き込むエディタ
  * @param str 書き込む文字列
- * @param startlen 書き込み開始の行
- * @param endlen 書き込み終了の行
+ * @param startLen 書き込み開始の行
+ * @param endLen 書き込み終了の行
  * @returns
  */
-export function documentWrite(edit: vscode.TextEditor, str: string, startlen: number = 0, endlen: number = edit.document.lineCount): void {
+export function documentWrite(edit: vscode.TextEditor, str: string, startLen: number = 0, endLen: number = edit.document.lineCount): void {
     /** 先頭箇所の取得 */
-    const topPos = new vscode.Position(startlen, 0);
+    const topPos = new vscode.Position(startLen, 0);
     /** 最終箇所の取得 */
-    const lastPos = new vscode.Position(endlen, 0);
+    const lastPos = new vscode.Position(endLen, 0);
     /** ポジションを選択する */
     const curSelection = new vscode.Selection(topPos, lastPos);
 

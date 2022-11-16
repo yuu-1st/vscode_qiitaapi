@@ -23,25 +23,25 @@ export function readQiitaParameter(editor: vscode.TextEditor, isIdErrorThenConti
         _lastRow: 0,
     };
     /** 開始行に到達しているか */
-    let isstarted = false;
+    let isStarted = false;
     /** 終了行に到達しているか */
-    let isended = false;
+    let isEnded = false;
 
     const doc = editor.document;
     for (let i = 0; i < doc.lineCount; i++) {
         /** １行を取得 */
         const text = documentRead(doc, i, i + 1).trim();
         // 判定していく
-        if (!isstarted) {
+        if (!isStarted) {
             if (text === "") {
                 // 空白行は無視する
             } else if (keyRegularExpression.test(text)) {
-                isstarted = true;
+                isStarted = true;
                 returnvalue._lastRow = -1; // 終了タグが見つからなかった時にエラーを出力できるように。
             } else {
                 break; // 最初に文字を含む場合は、全てMDコードと判断しループから抜ける
             }
-        } else if (isended) {
+        } else if (isEnded) {
             if (text === "") {
                 // 空白行は除外する
             } else {
@@ -92,7 +92,7 @@ export function readQiitaParameter(editor: vscode.TextEditor, isIdErrorThenConti
                     vscode.window.showErrorMessage(`qiitaパラメータ「${strBefore[1]}」が見つかりませんでした。このワードは無視されます。`);
                 }
             } else if (keyRegularExpression.test(text)) {
-                isended = true;
+                isEnded = true;
                 returnvalue._lastRow = i + 1; // 最終行まで空白だとパラメータがpostされてしまうため
             }
         }
@@ -227,10 +227,10 @@ export async function addQiitaParameter(editor: vscode.TextEditor, qiitaPrm: Qii
 /**
  * qiita パラメータの各行に付与する情報の列のテンプレートを返します。
  * @param title パラメータ名
- * @param isastarisk アスタリスクが必要か。
+ * @param isAsterisk アスタリスクが必要か。
  */
-function infomessageSet(title: string, maxlength: number, isastarisk: boolean, value: string): string {
-    return `\n  ${isastarisk ? "*" : ""} ${title.padStart(maxlength, " ")} : ${value}`;
+function infoMessageSet(title: string, maxLength: number, isAsterisk: boolean, value: string): string {
+    return `\n  ${isAsterisk ? "*" : ""} ${title.padStart(maxLength, " ")} : ${value}`;
 }
 
 /**
@@ -242,7 +242,7 @@ export function createQiitaParameterTemplete(qiitaPrm: QiitaParameter | null): s
     /** 添付するキー一覧 */
     const setKeys = ["ID", "title", "private", "istweet", "tags"];
     /** SetKeysで最大の文字数 */
-    const maxlength: number = Math.max(...setKeys.map((e) => e.length));
+    const maxLength: number = Math.max(...setKeys.map((e) => e.length));
     /** 開始及び終了のライン */
     const startAndEndMark = qiitaTempleteGetDelimiter() === "horizon" ? "---" : "//" + "*".repeat(20);
     /** アスタリスクが必要か */
@@ -267,7 +267,7 @@ export function createQiitaParameterTemplete(qiitaPrm: QiitaParameter | null): s
                 } else {
                     const a: never = objectValue;
                 }
-                returnvalue += infomessageSet(key, maxlength, needAsterisk, value);
+                returnvalue += infoMessageSet(key, maxLength, needAsterisk, value);
             }
         });
     }

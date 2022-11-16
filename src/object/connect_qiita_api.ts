@@ -7,14 +7,14 @@ interface QiitaApiPostData {
     json: any;
 }
 
-interface QiitaApiResponceData {
+interface QiitaApiResponseData {
     /**
      * ステータスコードメモ：
      * 成功：200（手動）
      * アクセストークンエラー：401
      * ネットワーク未接続：undefined
      * (Bad Request)：400
-     * (Forhidden。メンテナンスとか)：403
+     * (ForHidden。メンテナンスとか)：403
      * (urlエラー)：404
      * (サーバーエラー)：500
      */
@@ -29,16 +29,16 @@ export class ConnectQiitaApi {
      * qiita apiに接続します。アクセストークンは設定されているものとします。
      * @param method get通信かpost通信かpatch通信か
      * @param url "/"以降のurl
-     * @param qiitaAccesstoken qiitaのアクセストークン
+     * @param qiitaAccessToken qiitaのアクセストークン
      * @param body post通信の場合に送信するデータ
      * @returns
      */
     private static async sendAPI(
         method: HttpMethod,
         url: string,
-        qiitaAccesstoken: string,
+        qiitaAccessToken: string,
         body?: QiitaApiPostData
-    ): Promise<QiitaApiResponceData> {
+    ): Promise<QiitaApiResponseData> {
         url = "https://qiita.com" + url;
         let options: AxiosRequestConfig = {
             url,
@@ -46,7 +46,7 @@ export class ConnectQiitaApi {
                 // eslint-disable-next-line @typescript-eslint/naming-convention
                 "Content-type": "application/json",
                 // eslint-disable-next-line @typescript-eslint/naming-convention
-                Authorization: "Bearer " + qiitaAccesstoken,
+                Authorization: "Bearer " + qiitaAccessToken,
             },
         };
         if (method === "GET") {
@@ -56,9 +56,9 @@ export class ConnectQiitaApi {
             options.data = body?.json;
         }
         console.log(options);
-        const res: QiitaApiResponceData = await axios(options)
+        const res: QiitaApiResponseData = await axios(options)
             .then((html) => {
-                const ret: QiitaApiResponceData = {
+                const ret: QiitaApiResponseData = {
                     statuscode: "200",
                     body: {},
                 };
@@ -68,7 +68,7 @@ export class ConnectQiitaApi {
             .catch((error) => {
                 console.log("SendAPI Error : ");
                 console.log(error);
-                const ret: QiitaApiResponceData = {
+                const ret: QiitaApiResponseData = {
                     statuscode: error.statusCode + "",
                     body: null,
                 };
@@ -80,11 +80,11 @@ export class ConnectQiitaApi {
     /**
      * アクセストークンに基づいたユーザー情報を返します。
      */
-    public static async authenticatedUser(qiitaAccesstoken: string): Promise<qiita_types.AuthenticatedUser> {
+    public static async authenticatedUser(qiitaAccessToken: string): Promise<qiita_types.AuthenticatedUser> {
         const method: HttpMethod = "GET";
         const api = "/api/v2/authenticated_user";
 
-        const res = await ConnectQiitaApi.sendAPI(method, api, qiitaAccesstoken);
+        const res = await ConnectQiitaApi.sendAPI(method, api, qiitaAccessToken);
 
         if (res.statuscode === "200") {
             return res.body as qiita_types.AuthenticatedUser;
@@ -100,10 +100,10 @@ export class ConnectQiitaApi {
      * @returns タグデータ
      * TODO : tag_nameが空文字だった場合は-200のエラーを通過するので引数除外するかnullを返すか
      */
-    public static async findTag(qiitaAccesstoken: string, tagName: string): Promise<qiita_types.Tag> {
+    public static async findTag(qiitaAccessToken: string, tagName: string): Promise<qiita_types.Tag> {
         const method: HttpMethod = "GET";
         const api = "/api/v2/tags/";
-        const res = await ConnectQiitaApi.sendAPI(method, api + encodeURIComponent(tagName), qiitaAccesstoken);
+        const res = await ConnectQiitaApi.sendAPI(method, api + encodeURIComponent(tagName), qiitaAccessToken);
 
         if (res.statuscode === "200") {
             if (Array.isArray(res.body)) {
@@ -125,10 +125,10 @@ export class ConnectQiitaApi {
      * @param qiitaPrm
      * @returns
      */
-    public static async postNewItem(qiitaAccesstoken: string, body: string, qiitaPrm: QiitaParameter): Promise<qiita_types.Item> {
+    public static async postNewItem(qiitaAccessToken: string, body: string, qiitaPrm: QiitaParameter): Promise<qiita_types.Item> {
         const method: HttpMethod = "POST";
         const api = "/api/v2/items";
-        const senddata = {
+        const sendData = {
             body: body,
             private: qiitaPrm.private === false ? false : true,
             tags: qiitaPrm.tags.map((e) => {
@@ -137,7 +137,7 @@ export class ConnectQiitaApi {
             title: qiitaPrm.title,
             tweet: qiitaPrm.istweet,
         };
-        const res = await ConnectQiitaApi.sendAPI(method, api, qiitaAccesstoken, { json: senddata });
+        const res = await ConnectQiitaApi.sendAPI(method, api, qiitaAccessToken, { json: sendData });
 
         if (res.statuscode === "200") {
             return res.body as qiita_types.Item;

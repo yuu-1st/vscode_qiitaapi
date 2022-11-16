@@ -57,7 +57,7 @@ export async function checkExtensionsUpdate(context: vscode.ExtensionContext) {
     // 現在のバージョンを保存
     context.globalState.update(extensionId, currentVersion);
     if (previousVersion === undefined || isMinorUpdate(previousVersion, currentVersion)) {
-        //show whats new notificatin:
+        //show whats new notification:
         const actions = [{ title: "更新内容の表示" }, { title: "閉じる" }];
         const result = await vscode.window.showInformationMessage(
             `vscode_qiitaapi を v${currentVersion} にアップデートしました。`,

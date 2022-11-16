@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { readQiitaParameter, addQiitaParameter, createQiitaParameterTemplete, getUrlFromQiitaParameter } from "./object/qiita_parameter";
-import * as set_manag from "./object/settings_management";
+import * as set_management from "./object/settings_management";
 import { ConnectQiitaApi } from "./object/connect_qiita_api";
 import * as qiita_types from "./object/qiita-types";
 import { documentRead, documentWrite, getFileExtension } from "./object/file_operating";
@@ -12,9 +12,9 @@ import { QiitaParameter } from "./object/interface";
  * @returns
  */
 export async function qiitaPost() {
-    const qiitaAccesstoken = set_manag.checkQiitaAccesstoken();
+    const qiitaAccessToken = set_management.checkQiitaAccessToken();
     // トークンの確認
-    if (!qiitaAccesstoken) {
+    if (!qiitaAccessToken) {
         vscode.window.showErrorMessage("Qiitaのアクセストークンが未記入か不正です。：vscode_qiitaapi.accesstoken");
         return;
     }
@@ -61,10 +61,10 @@ export async function qiitaPost() {
 
         // qiita IDが正しいかチェックする
         try {
-            const data: qiita_types.AuthenticatedUser = await ConnectQiitaApi.authenticatedUser(qiitaAccesstoken);
+            const data: qiita_types.AuthenticatedUser = await ConnectQiitaApi.authenticatedUser(qiitaAccessToken);
             vscode.window.setStatusBarMessage(`Qiita ID「${data.id}」に投稿します。`, 10000);
         } catch (e) {
-            connectionExceptionMessage(e);
+            connectionExceptionMessage(e as any);
             return;
         }
 
@@ -74,19 +74,19 @@ export async function qiitaPost() {
         let qiitaPrm: QiitaParameter | null = readQiitaParameter(editor);
         /** qiitaパラメータ群を除いた本文 */
         const body = documentRead(doc, qiitaPrm._lastRow);
-        let sendbody: string = "";
+        let sendBody: string = "";
 
         if (fileExtension !== "md") {
             try {
                 const pandoc = execSync(`pandoc -f ${fileExtension} -t markdown`, { input: body });
-                sendbody = pandoc.toString();
+                sendBody = pandoc.toString();
             } catch (e) {
                 console.log(e);
                 vscode.window.showErrorMessage("pandocの実行に失敗しました。操作を続行できません。");
                 return;
             }
         } else {
-            sendbody = body;
+            sendBody = body;
         }
 
         // 足りないqiitaパラメータを入力する
@@ -101,20 +101,20 @@ export async function qiitaPost() {
         if (qiitaPrm) {
             if (qiitaPrm.ID) {
                 try {
-                    await ConnectQiitaApi.postUpdateItem(qiitaAccesstoken, sendbody, qiitaPrm);
+                    await ConnectQiitaApi.postUpdateItem(qiitaAccessToken, sendBody, qiitaPrm);
                 } catch (e) {
-                    connectionExceptionMessage(e);
+                    connectionExceptionMessage(e as any);
                     return;
                 }
             } else {
-                let receivedata: qiita_types.Item;
+                let receiveData: qiita_types.Item;
                 try {
-                    receivedata = await ConnectQiitaApi.postNewItem(qiitaAccesstoken, sendbody, qiitaPrm);
+                    receiveData = await ConnectQiitaApi.postNewItem(qiitaAccessToken, sendBody, qiitaPrm);
                 } catch (e) {
-                    connectionExceptionMessage(e);
+                    connectionExceptionMessage(e as any);
                     return;
                 }
-                qiitaPrm.ID = receivedata.id;
+                qiitaPrm.ID = receiveData.id;
             }
             vscode.window.showInformationMessage("Qiitaに投稿しました。", "表示").then((e) => {
                 if (e === "表示") {
