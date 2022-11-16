@@ -1,5 +1,6 @@
 import * as qiita_types from "./qiita-types";
-import request = require("request-promise-native");
+// import request = require("request-promise-native");
+import axios, { AxiosRequestConfig } from "axios";
 import { QiitaParameter } from "./interface";
 
 interface QiitaApiPostData {
@@ -39,11 +40,12 @@ export class ConnectQiitaApi {
         body?: QiitaApiPostData
     ): Promise<QiitaApiResponceData> {
         url = "https://qiita.com" + url;
-        let options: request.RequestPromiseOptions = {
+        let options: AxiosRequestConfig = {
+            url,
             headers: {
-                // eslint-disable-next-line
+                // eslint-disable-next-line @typescript-eslint/naming-convention
                 "Content-type": "application/json",
-                // eslint-disable-next-line
+                // eslint-disable-next-line @typescript-eslint/naming-convention
                 Authorization: "Bearer " + qiitaAccesstoken,
             },
         };
@@ -51,25 +53,16 @@ export class ConnectQiitaApi {
             options.method = method;
         } else {
             options.method = method;
-            options.json = body?.json;
+            options.data = body?.json;
         }
         console.log(options);
-        const res: QiitaApiResponceData = await request(url, options)
+        const res: QiitaApiResponceData = await axios(options)
             .then((html) => {
                 const ret: QiitaApiResponceData = {
                     statuscode: "200",
                     body: {},
                 };
-                if (method === "GET") {
-                    try {
-                        ret.body = JSON.parse(html);
-                    } catch (e) {
-                        console.log(html);
-                        ret.statuscode = "-100"; // エラーステータス
-                    }
-                } else {
-                    ret.body = html;
-                }
+                ret.body = html.data;
                 return ret;
             })
             .catch((error) => {
