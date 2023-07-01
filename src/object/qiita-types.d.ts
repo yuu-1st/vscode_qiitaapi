@@ -8,7 +8,7 @@
 /**
  * このスキーマ定義では、Qiita API v2 のインターフェースをJSON Hyper Schema draft v4形式で表現しています。
  */
- export interface QiitaAPIV2JSONSchema {
+export interface QiitaAPIV2JSONSchema {
   access_token: AccessToken;
   authenticated_user: AuthenticatedUser;
   comment: Comment;
