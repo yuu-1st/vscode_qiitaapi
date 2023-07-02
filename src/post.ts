@@ -4,11 +4,11 @@ import {
   addQiitaParameter,
   createQiitaParameterTemplete,
   getUrlFromQiitaParameter,
-} from './object/qiita_parameter';
-import * as set_management from './object/settings_management';
-import { ConnectQiitaApi } from './object/connect_qiita_api';
-import * as qiita_types from './object/qiita-types';
-import { documentRead, documentWrite, getFileExtension } from './object/file_operating';
+} from './object/qiitaParameter';
+import * as set_management from './object/settingsManagement';
+import { ConnectQiitaApi } from './object/connectQiitaApi';
+import * as qiita_types from './object/qiitaTypes';
+import { documentRead, documentWrite, getFileExtension } from './object/fileOperating';
 import { execSync } from 'child_process';
 import { QiitaParameter } from './object/interface';
 

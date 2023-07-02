@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { getUrlFromQiitaParameter, readQiitaParameter } from './object/qiita_parameter';
+import { getUrlFromQiitaParameter, readQiitaParameter } from './object/qiitaParameter';
 import * as clipboardy from 'clipboardy';
 /**
  * 投稿済みの記事からurlを取得し、クリップボードに貼り付けます。

@@ -2,9 +2,9 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import { qiitaPost } from './post';
-import { setTemplete } from './set_templete';
-import { checkExtensionsUpdate } from './object/check_update';
-import { articleUrl } from './get_articleurl';
+import { setTemplete } from './setTemplate';
+import { checkExtensionsUpdate } from './object/checkUpdate';
+import { articleUrl } from './getArticleUrl';
 
 /**
  * このメソッドは、拡張機能がアクティブ化されたときに呼び出されます

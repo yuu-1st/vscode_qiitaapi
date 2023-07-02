@@ -1,12 +1,12 @@
 import * as vscode from 'vscode';
-import { documentRead, documentWrite } from './object/file_operating';
+import { documentRead, documentWrite } from './object/fileOperating';
 import { QiitaParameter } from './object/interface';
 import {
   addQiitaParameterToTempleteDefault,
   createQiitaParameterTemplete,
   readQiitaParameter,
-} from './object/qiita_parameter';
-import { qiitaTempleteSetDefault } from './object/settings_management';
+} from './object/qiitaParameter';
+import { qiitaTempleteSetDefault } from './object/settingsManagement';
 
 /**
  * ファイルの先頭にテンプレートを追加します。

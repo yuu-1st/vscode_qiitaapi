@@ -1,4 +1,4 @@
-import * as qiita_types from './qiita-types';
+import * as qiita_types from './qiitaTypes';
 // import request = require("request-promise-native");
 import axios, { AxiosRequestConfig } from 'axios';
 import { QiitaParameter } from './interface';

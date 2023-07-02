@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
-import { documentRead } from './file_operating';
+import { documentRead } from './fileOperating';
 import { QiitaParameter, TypeQiitaTempleteDefault } from './interface';
-import { qiitaTempleteGetDelimiter } from './settings_management';
+import { qiitaTempleteGetDelimiter } from './settingsManagement';
 
 /**
  * qiita記事のパラメータが埋め込まれているか確認し、埋め込まれている場合は取得します。
