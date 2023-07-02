@@ -67,7 +67,7 @@ export async function qiitaPost() {
       fileExtension = 'html';
     } else {
       vscode.window.showErrorMessage(
-        '対応していない拡張子のファイルはアップロードできません。：' + ext,
+        `対応していない拡張子のファイルはアップロードできません。：${ext}`,
       );
       return;
     }
@@ -142,7 +142,7 @@ export async function qiitaPost() {
 
       const param = createQiitaParameterTemplete(qiitaPrm);
 
-      documentWrite(editor, param + '\n' + body);
+      documentWrite(editor, `${param}\n${body}`);
     }
   } else {
     vscode.window.showErrorMessage('アクティブエディタが取得できませんでした。');

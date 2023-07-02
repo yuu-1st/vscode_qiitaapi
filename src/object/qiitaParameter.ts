@@ -171,7 +171,7 @@ export async function addQiitaParameter(
           vscode.window.showErrorMessage('タイトルの文字が入力されませんでした。');
         } else if (e.length > 255) {
           vscode.window.showErrorMessage(
-            'タイトルの文字が長すぎます。255文字以内に納めてください。：' + e,
+            `タイトルの文字が長すぎます。255文字以内に納めてください。：${e}`,
           );
         } else {
           qiitaPrm.title = e;
@@ -231,7 +231,7 @@ export async function addQiitaParameter(
           .map((e) => e.trim())
           .filter((v) => v !== '');
         if (tags.length > 5) {
-          vscode.window.showErrorMessage('タグは５つまでしか設定できません。：' + e);
+          vscode.window.showErrorMessage(`タグは５つまでしか設定できません。：${e}`);
         } else {
           qiitaPrm.tags = tags;
         }
@@ -269,7 +269,7 @@ export function createQiitaParameterTemplete(qiitaPrm: QiitaParameter | null): s
   /** SetKeysで最大の文字数 */
   const maxLength: number = Math.max(...setKeys.map((e) => e.length));
   /** 開始及び終了のライン */
-  const startAndEndMark = qiitaTempleteGetDelimiter() === 'horizon' ? '---' : '//' + '*'.repeat(20);
+  const startAndEndMark = qiitaTempleteGetDelimiter() === 'horizon' ? '---' : `//${'*'.repeat(20)}`;
   /** アスタリスクが必要か */
   const needAsterisk: boolean = qiitaTempleteGetDelimiter() === 'horizon' ? false : true;
 
@@ -332,7 +332,7 @@ export function addQiitaParameterToTempleteDefault(
  */
 export function getUrlFromQiitaParameter(qiitaPrm: QiitaParameter): string | null {
   if (qiitaPrm.ID) {
-    return 'https://qiita.com/' + (qiitaPrm?.private ? 'private' : 'items') + '/' + qiitaPrm?.ID;
+    return `https://qiita.com/${qiitaPrm?.private ? 'private' : 'items'}/${qiitaPrm?.ID}`;
   } else {
     return null;
   }

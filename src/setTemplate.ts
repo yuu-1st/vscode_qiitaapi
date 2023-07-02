@@ -12,7 +12,7 @@ import { qiitaTempleteSetDefault } from './object/settingsManagement';
  * ファイルの先頭にテンプレートを追加します。
  */
 export function setTemplete() {
-  console.log('qiitatemplete_setdefault : ' + qiitaTempleteSetDefault());
+  console.log(`qiitatemplete_setdefault : ${qiitaTempleteSetDefault()}`);
   // アクティブエディタの取得
   const editor = vscode.window.activeTextEditor;
   if (editor) {
@@ -27,7 +27,7 @@ export function setTemplete() {
     /** qiitaパラメータ群を除いた本文 */
     const body = documentRead(doc, qiitaPrm._lastRow);
 
-    documentWrite(editor, param + '\n' + body);
+    documentWrite(editor, `${param}\n${body}`);
   } else {
     vscode.window.showErrorMessage('アクティブエディタが取得できませんでした。');
   }

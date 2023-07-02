@@ -39,14 +39,14 @@ export class ConnectQiitaApi {
     qiitaAccessToken: string,
     body?: QiitaApiPostData,
   ): Promise<QiitaApiResponseData> {
-    url = 'https://qiita.com' + url;
+    url = `https://qiita.com${url}`;
     let options: AxiosRequestConfig = {
       url,
       headers: {
         // eslint-disable-next-line @typescript-eslint/naming-convention
         'Content-type': 'application/json',
         // eslint-disable-next-line @typescript-eslint/naming-convention
-        Authorization: 'Bearer ' + qiitaAccessToken,
+        Authorization: `Bearer ${qiitaAccessToken}`,
       },
     };
     if (method === 'GET') {
@@ -69,7 +69,7 @@ export class ConnectQiitaApi {
         console.log('SendAPI Error : ');
         console.log(error);
         const ret: QiitaApiResponseData = {
-          statuscode: error.statusCode + '',
+          statuscode: `${error.statusCode}`,
           body: null,
         };
         return ret;
@@ -91,7 +91,7 @@ export class ConnectQiitaApi {
     if (res.statuscode === '200') {
       return res.body as qiita_types.AuthenticatedUser;
     } else {
-      console.error('status code : ' + res.statuscode);
+      console.error(`status code : ${res.statuscode}`);
       throw new Error(res.statuscode);
     }
   }
@@ -120,7 +120,7 @@ export class ConnectQiitaApi {
         return res.body as qiita_types.Tag;
       }
     } else {
-      console.error('status code : ' + res.statuscode);
+      console.error(`status code : ${res.statuscode}`);
       throw new Error(res.statuscode);
     }
   }
@@ -152,7 +152,7 @@ export class ConnectQiitaApi {
     if (res.statuscode === '200') {
       return res.body as qiita_types.Item;
     } else {
-      console.error('status code : ' + res.statuscode);
+      console.error(`status code : ${res.statuscode}`);
       throw new Error(res.statuscode);
     }
   }
@@ -169,7 +169,7 @@ export class ConnectQiitaApi {
     qiitaPrm: QiitaParameter,
   ): Promise<qiita_types.Item> {
     const method: HttpMethod = 'PATCH';
-    const api = '/api/v2/items/' + qiitaPrm.ID;
+    const api = `/api/v2/items/${qiitaPrm.ID}`;
     const senddata = {
       body: body,
       private: qiitaPrm.private === false ? false : true,
@@ -183,7 +183,7 @@ export class ConnectQiitaApi {
     if (res.statuscode === '200') {
       return res.body as qiita_types.Item;
     } else {
-      console.error('status code : ' + res.statuscode);
+      console.error(`status code : ${res.statuscode}`);
       throw new Error(res.statuscode);
     }
   }

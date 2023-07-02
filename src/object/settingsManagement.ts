@@ -37,6 +37,6 @@ export function qiitaTempleteGetDelimiter(): interfaces.TypeQiitaTempleteDelimit
   const templeteDelimiter: string =
     vscode.workspace.getConfiguration('vscode_qiitaapi').templeteDelimiter;
 
-  console.log('templetedefault : ' + templeteDelimiter);
+  console.log(`templetedefault : ${templeteDelimiter}`);
   return interfaces.arrayQiitaTempleteDelimiter.find((e) => e === templeteDelimiter) ?? null;
 }
