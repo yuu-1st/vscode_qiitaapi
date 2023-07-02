@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { documentRead } from './fileOperating';
-import { QiitaParameter, TypeQiitaTempleteDefault } from './interface';
-import { qiitaTempleteGetDelimiter } from './settingsManagement';
+import { QiitaParameter, TypeQiitaTemplateDefault } from './interface';
+import { qiitaTemplateGetDelimiter } from './settingsManagement';
 
 /**
  * qiita記事のパラメータが埋め込まれているか確認し、埋め込まれている場合は取得します。
@@ -120,7 +120,7 @@ function checkAndInsertQiitaId(str: string): string {
   if (/^[0-9a-f]{20}$/.test(str)) {
     return str;
   } else {
-    throw new Error('checkandinsert_qiita_id failed.');
+    throw new Error('checkAndInsertQiitaId failed.');
   }
 }
 
@@ -263,15 +263,15 @@ function infoMessageSet(
  * @param qiitaPrm
  * @returns
  */
-export function createQiitaParameterTemplete(qiitaPrm: QiitaParameter | null): string {
+export function createQiitaParameterTemplate(qiitaPrm: QiitaParameter | null): string {
   /** 添付するキー一覧 */
   const setKeys = ['ID', 'title', 'private', 'istweet', 'tags'];
   /** SetKeysで最大の文字数 */
   const maxLength: number = Math.max(...setKeys.map((e) => e.length));
   /** 開始及び終了のライン */
-  const startAndEndMark = qiitaTempleteGetDelimiter() === 'horizon' ? '---' : `//${'*'.repeat(20)}`;
+  const startAndEndMark = qiitaTemplateGetDelimiter() === 'horizon' ? '---' : `//${'*'.repeat(20)}`;
   /** アスタリスクが必要か */
-  const needAsterisk: boolean = qiitaTempleteGetDelimiter() === 'horizon' ? false : true;
+  const needAsterisk: boolean = qiitaTemplateGetDelimiter() === 'horizon' ? false : true;
 
   let returnvalue = startAndEndMark;
 
@@ -305,9 +305,9 @@ export function createQiitaParameterTemplete(qiitaPrm: QiitaParameter | null): s
  * @param qiitaPrm
  * @param _default
  */
-export function addQiitaParameterToTempleteDefault(
+export function addQiitaParameterToTemplateDefault(
   qiitaPrm: QiitaParameter,
-  _default: TypeQiitaTempleteDefault,
+  _default: TypeQiitaTemplateDefault,
 ): void {
   if (qiitaPrm.private === null) {
     if (_default === 'private') {

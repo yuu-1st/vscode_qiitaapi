@@ -21,22 +21,22 @@ export function checkQiitaAccessToken(): string | null {
  * vscode_qiitaapi.templetedefaultにセットしている値を返します。セットされていない場合はnullを返します。
  * @returns
  */
-export function qiitaTempleteSetDefault(): interfaces.TypeQiitaTempleteDefault | null {
-  const templeteDefault: string =
+export function qiitaTemplateSetDefault(): interfaces.TypeQiitaTemplateDefault | null {
+  const templateDefault: string =
     vscode.workspace.getConfiguration('vscode_qiitaapi').templetedefault;
 
-  //    console.log("templetedefault : " + templetedefault);
-  return interfaces.arrayQiitatempleteDefault.find((e) => e === templeteDefault) ?? null;
+  //    console.log(`templateDefault : ${templateDefault});
+  return interfaces.arrayQiitaTemplateDefault.find((e) => e === templateDefault) ?? null;
 }
 
 /**
  * vscode_qiitaapi.templeteDelimiterにセットしている値を返します。セットされていない場合はnullを返します。
  * @returns
  */
-export function qiitaTempleteGetDelimiter(): interfaces.TypeQiitaTempleteDelimiter | null {
-  const templeteDelimiter: string =
+export function qiitaTemplateGetDelimiter(): interfaces.TypeQiitaTemplateDelimiter | null {
+  const templateDelimiter: string =
     vscode.workspace.getConfiguration('vscode_qiitaapi').templeteDelimiter;
 
-  console.log(`templetedefault : ${templeteDelimiter}`);
-  return interfaces.arrayQiitaTempleteDelimiter.find((e) => e === templeteDelimiter) ?? null;
+  console.log(`templateDelimiter : ${templateDelimiter}`);
+  return interfaces.arrayQiitaTemplateDelimiter.find((e) => e === templateDelimiter) ?? null;
 }

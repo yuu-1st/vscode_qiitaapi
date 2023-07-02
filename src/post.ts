@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import {
   readQiitaParameter,
   addQiitaParameter,
-  createQiitaParameterTemplete,
+  createQiitaParameterTemplate,
   getUrlFromQiitaParameter,
 } from './object/qiitaParameter';
 import * as set_management from './object/settingsManagement';
@@ -140,7 +140,7 @@ export async function qiitaPost() {
         }
       });
 
-      const param = createQiitaParameterTemplete(qiitaPrm);
+      const param = createQiitaParameterTemplate(qiitaPrm);
 
       documentWrite(editor, `${param}\n${body}`);
     }

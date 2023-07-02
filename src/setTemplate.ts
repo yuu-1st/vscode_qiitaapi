@@ -2,27 +2,27 @@ import * as vscode from 'vscode';
 import { documentRead, documentWrite } from './object/fileOperating';
 import { QiitaParameter } from './object/interface';
 import {
-  addQiitaParameterToTempleteDefault,
-  createQiitaParameterTemplete,
+  addQiitaParameterToTemplateDefault,
+  createQiitaParameterTemplate,
   readQiitaParameter,
 } from './object/qiitaParameter';
-import { qiitaTempleteSetDefault } from './object/settingsManagement';
+import { qiitaTemplateSetDefault } from './object/settingsManagement';
 
 /**
  * ファイルの先頭にテンプレートを追加します。
  */
-export function setTemplete() {
-  console.log(`qiitatemplete_setdefault : ${qiitaTempleteSetDefault()}`);
+export function setTemplate() {
+  console.log(`qiitaTemplateSetDefault : ${qiitaTemplateSetDefault()}`);
   // アクティブエディタの取得
   const editor = vscode.window.activeTextEditor;
   if (editor) {
     /** qiitaパラメータ群 */
     const qiitaPrm: QiitaParameter = readQiitaParameter(editor, true);
-    const _default = qiitaTempleteSetDefault();
+    const _default = qiitaTemplateSetDefault();
     if (_default) {
-      addQiitaParameterToTempleteDefault(qiitaPrm, _default);
+      addQiitaParameterToTemplateDefault(qiitaPrm, _default);
     }
-    const param = createQiitaParameterTemplete(qiitaPrm);
+    const param = createQiitaParameterTemplate(qiitaPrm);
     const doc = editor.document;
     /** qiitaパラメータ群を除いた本文 */
     const body = documentRead(doc, qiitaPrm._lastRow);

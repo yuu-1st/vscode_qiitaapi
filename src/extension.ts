@@ -2,7 +2,7 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import { qiitaPost } from './post';
-import { setTemplete } from './setTemplate';
+import { setTemplate } from './setTemplate';
 import { checkExtensionsUpdate } from './object/checkUpdate';
 import { articleUrl } from './getArticleUrl';
 
@@ -22,9 +22,9 @@ export function activate(context: vscode.ExtensionContext) {
   /**
    * テンプレートをファイルに付与する
    */
-  const commandSetTemplete = vscode.commands.registerCommand(
+  const commandSetTemplate = vscode.commands.registerCommand(
     'vscode_qiitaapi.set_templete',
-    setTemplete,
+    setTemplate,
   );
 
   /**
@@ -32,7 +32,7 @@ export function activate(context: vscode.ExtensionContext) {
    */
   const commandGetUrl = vscode.commands.registerCommand('vscode_qiitaapi.geturl', articleUrl);
 
-  context.subscriptions.push(commandQiitaPost, commandSetTemplete, commandGetUrl);
+  context.subscriptions.push(commandQiitaPost, commandSetTemplate, commandGetUrl);
 
   // アップデートしたかどうかのチェック
   checkExtensionsUpdate(context);
