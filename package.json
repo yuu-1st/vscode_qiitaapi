@@ -14,7 +14,10 @@
   "activationEvents": [
     "onCommand:vscode_qiitaapi.post",
     "onCommand:vscode_qiitaapi.set_templete",
-    "onCommand:vscode_qiitaapi.geturl"
+    "onCommand:vscode_qiitaapi.setTemplate",
+    "onCommand:vscode_qiitaapi.geturl",
+    "onCommand:vscode_qiitaapi.getUrl"
+
   ],
   "repository": {
     "type": "git",
@@ -28,11 +31,11 @@
         "title": "qiitaに投稿する"
       },
       {
-        "command": "vscode_qiitaapi.set_templete",
+        "command": "vscode_qiitaapi.setTemplate",
         "title": "qiita テンプレートを付与する"
       },
       {
-        "command": "vscode_qiitaapi.geturl",
+        "command": "vscode_qiitaapi.getUrl",
         "title": "qiita 記事のurlを取得する"
       }
     ],

@@ -5,6 +5,7 @@ import { qiitaPost } from './post';
 import { setTemplate } from './setTemplate';
 import { checkExtensionsUpdate } from './object/checkUpdate';
 import { articleUrl } from './getArticleUrl';
+import { commandIdChange } from './object/commandIdChange';
 
 /**
  * このメソッドは、拡張機能がアクティブ化されたときに呼び出されます
@@ -20,19 +21,41 @@ export function activate(context: vscode.ExtensionContext) {
   const commandQiitaPost = vscode.commands.registerCommand('vscode_qiitaapi.post', qiitaPost);
 
   /**
+   * テンプレートをファイルに付与する(typo version。v0.7.0で削除予定)
+   */
+  const commandSetTemplateTypo = vscode.commands.registerCommand(
+    'vscode_qiitaapi.set_templete',
+    commandIdChange(setTemplate, 'vscode_qiitaapi.set_templete', 'vscode_qiitaapi.setTemplate'),
+  );
+
+  /**
    * テンプレートをファイルに付与する
    */
   const commandSetTemplate = vscode.commands.registerCommand(
-    'vscode_qiitaapi.set_templete',
+    'vscode_qiitaapi.setTemplate',
     setTemplate,
+  );
+
+  /**
+   * 投稿済みの記事からurlを取得する。(typo version。v0.7.0で削除予定)
+   */
+  const commandGetUrlTypo = vscode.commands.registerCommand(
+    'vscode_qiitaapi.geturl',
+    commandIdChange(articleUrl, 'vscode_qiitaapi.geturl', 'vscode_qiitaapi.getUrl'),
   );
 
   /**
    * 投稿済みの記事からurlを取得する。
    */
-  const commandGetUrl = vscode.commands.registerCommand('vscode_qiitaapi.geturl', articleUrl);
+  const commandGetUrl = vscode.commands.registerCommand('vscode_qiitaapi.getUrl', articleUrl);
 
-  context.subscriptions.push(commandQiitaPost, commandSetTemplate, commandGetUrl);
+  context.subscriptions.push(
+    commandQiitaPost,
+    commandSetTemplateTypo,
+    commandSetTemplate,
+    commandGetUrlTypo,
+    commandGetUrl,
+  );
 
   // アップデートしたかどうかのチェック
   checkExtensionsUpdate(context);
