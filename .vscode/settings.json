@@ -12,5 +12,15 @@
         "qiita",
         "qiitaapi",
         "yuuyu"
+    ],
+    "cSpell.words": [
+        "accesstoken",
+        "APIV2",
+        "clipboardy",
+        "coediting",
+        "followees",
+        "istweet",
+        "LGTMAPI",
+        "outfile"
     ]
 }
