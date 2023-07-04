@@ -9,9 +9,9 @@ export async function articleUrl() {
   // アクティブエディタの取得
   const editor = vscode.window.activeTextEditor;
   if (editor) {
-    let qiitaTemplete = readQiitaParameter(editor, true);
+    let qiitaTemplate = readQiitaParameter(editor, true);
 
-    const url = getUrlFromQiitaParameter(qiitaTemplete);
+    const url = getUrlFromQiitaParameter(qiitaTemplate);
     if (url) {
       const items = ['urlのみコピー', 'MarkDown形式でコピー'];
       vscode.window.showInformationMessage('リンクの準備ができました。', ...items).then((e) => {
@@ -19,7 +19,7 @@ export async function articleUrl() {
         if (e === items[0]) {
           copyValue = url;
         } else if (e === items[1]) {
-          copyValue = `[${qiitaTemplete.title}](${url})`;
+          copyValue = `[${qiitaTemplate.title}](${url})`;
         }
         if (copyValue) {
           clipboardy.writeSync(copyValue);

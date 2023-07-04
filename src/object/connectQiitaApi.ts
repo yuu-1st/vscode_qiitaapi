@@ -170,7 +170,7 @@ export class ConnectQiitaApi {
   ): Promise<qiita_types.Item> {
     const method: HttpMethod = 'PATCH';
     const api = `/api/v2/items/${qiitaPrm.ID}`;
-    const senddata = {
+    const sendData = {
       body: body,
       private: qiitaPrm.private === false ? false : true,
       tags: qiitaPrm.tags.map((e) => {
@@ -178,7 +178,7 @@ export class ConnectQiitaApi {
       }),
       title: qiitaPrm.title,
     };
-    const res = await ConnectQiitaApi.sendAPI(method, api, qiitaAccesstoken, { json: senddata });
+    const res = await ConnectQiitaApi.sendAPI(method, api, qiitaAccesstoken, { json: sendData });
 
     if (res.statuscode === '200') {
       return res.body as qiita_types.Item;

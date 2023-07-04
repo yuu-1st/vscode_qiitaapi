@@ -20,7 +20,7 @@ export interface QiitaParameter {
 /**
  * qiita テンプレートのデフォルト値を扱う値群です
  */
-export const arrayQiitatempleteDefault = [
+export const arrayQiitaTemplateDefault = [
   'private',
   'public and tweet',
   'public but no tweet',
@@ -30,14 +30,14 @@ export const arrayQiitatempleteDefault = [
 /**
  * qiita テンプレートのデフォルト値を扱うtypeです。
  */
-export type TypeQiitaTempleteDefault = (typeof arrayQiitatempleteDefault)[number];
+export type TypeQiitaTemplateDefault = (typeof arrayQiitaTemplateDefault)[number];
 
 /**
  * qiita テンプレートの区切り文字を扱う値群です
  */
-export const arrayQiitaTempleteDelimiter = ['horizon', 'comment'] as const;
+export const arrayQiitaTemplateDelimiter = ['horizon', 'comment'] as const;
 
 /**
  * qiita テンプレートの区切り文字を扱うtypeです。
  */
-export type TypeQiitaTempleteDelimiter = (typeof arrayQiitaTempleteDelimiter)[number];
+export type TypeQiitaTemplateDelimiter = (typeof arrayQiitaTemplateDelimiter)[number];

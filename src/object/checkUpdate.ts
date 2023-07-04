@@ -1,5 +1,6 @@
 // [更新時にVSCode拡張機能/カラーテーマ通知のユーザーに表示することは可能ですか？](https://www.fixes.pub/program/285186.html)
 import * as vscode from 'vscode';
+import { migrateConfig } from './settingsManagement';
 
 const extensionId = 'yuuyu.vscode-qiitaapi';
 
@@ -49,28 +50,45 @@ function isMinorUpdate(previousVersion: string, currentVersion: string) {
   }
 }
 
+/**
+ * バージョンアップ時に実行する処理
+ * @param previousVersion 過去のバージョン
+ * @param currentVersion 現在のバージョン
+ */
+export async function executeOnUpdate(previousVersion: string, currentVersion: string) {
+  // 前回のバージョンが0.6.0未満の場合
+  if (isMinorUpdate(previousVersion, '0.6.0')) {
+    // configuration名の変更
+    await migrateConfig('templetedefault', 'templateDefault', true);
+    migrateConfig('templateDelimiter', 'templateDelimiter', true);
+  }
+}
+
 export async function checkExtensionsUpdate(context: vscode.ExtensionContext) {
   /** 過去のバージョンを取得 */
   const previousVersion = context.globalState.get<string>(extensionId);
   /** 現在のバージョンを取得 */
   const currentVersion = vscode.extensions.getExtension(extensionId)!.packageJSON.version;
   // 現在のバージョンを保存
-  context.globalState.update(extensionId, currentVersion);
-  if (previousVersion === undefined || isMinorUpdate(previousVersion, currentVersion)) {
+  // context.globalState.update(extensionId, currentVersion);
+  if (previousVersion !== undefined && isMinorUpdate(previousVersion, currentVersion)) {
+    // バージョンアップ時に実行する処理
+    await executeOnUpdate(previousVersion, currentVersion);
     //show whats new notification:
     const actions = [{ title: '更新内容の表示' }, { title: '閉じる' }];
-    const result = await vscode.window.showInformationMessage(
+    vscode.window.showInformationMessage(
       `vscode_qiitaapi を v${currentVersion} にアップデートしました。`,
       ...actions,
-    );
-    if (result !== null) {
-      if (result === actions[0]) {
-        await vscode.env.openExternal(
-          vscode.Uri.parse(
-            'https://marketplace.visualstudio.com/items/yuuyu.vscode-qiitaapi/changelog',
-          ),
-        );
+    ).then((result) => {
+      if (result !== null) {
+        if (result === actions[0]) {
+          vscode.env.openExternal(
+            vscode.Uri.parse(
+              'https://marketplace.visualstudio.com/items/yuuyu.vscode-qiitaapi/changelog',
+            ),
+          );
+        }
       }
-    }
+    });
   }
 }
