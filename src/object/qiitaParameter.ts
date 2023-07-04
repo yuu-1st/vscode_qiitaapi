@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { documentRead } from './fileOperating';
 import { QiitaParameter, TypeQiitaTemplateDefault } from './interface';
-import { qiitaTemplateGetDelimiter } from './settingsManagement';
+import { getTemplateDelimiter } from './settingsManagement';
 
 /**
  * qiita記事のパラメータが埋め込まれているか確認し、埋め込まれている場合は取得します。
@@ -269,9 +269,9 @@ export function createQiitaParameterTemplate(qiitaPrm: QiitaParameter | null): s
   /** SetKeysで最大の文字数 */
   const maxLength: number = Math.max(...setKeys.map((e) => e.length));
   /** 開始及び終了のライン */
-  const startAndEndMark = qiitaTemplateGetDelimiter() === 'horizon' ? '---' : `//${'*'.repeat(20)}`;
+  const startAndEndMark = getTemplateDelimiter() === 'horizon' ? '---' : `//${'*'.repeat(20)}`;
   /** アスタリスクが必要か */
-  const needAsterisk: boolean = qiitaTemplateGetDelimiter() === 'horizon' ? false : true;
+  const needAsterisk: boolean = getTemplateDelimiter() === 'horizon' ? false : true;
 
   let returnvalue = startAndEndMark;
 

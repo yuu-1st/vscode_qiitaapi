@@ -12,8 +12,11 @@ import { commandIdChange } from './object/commandIdChange';
  * コマンドが最初に実行されたときに拡張機能がアクティブ化されます
  * @param context
  */
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
   console.log('Congratulations, your extension "vscode-qiitaapi" is now active!');
+
+  // アップデートしたかどうかのチェック
+  await checkExtensionsUpdate(context);
 
   /**
    * 記事を投稿/更新する
@@ -56,9 +59,6 @@ export function activate(context: vscode.ExtensionContext) {
     commandGetUrlTypo,
     commandGetUrl,
   );
-
-  // アップデートしたかどうかのチェック
-  checkExtensionsUpdate(context);
 }
 
 // this method is called when your extension is deactivated

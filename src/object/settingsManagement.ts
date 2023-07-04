@@ -18,25 +18,64 @@ export function checkQiitaAccessToken(): string | null {
 }
 
 /**
- * vscode_qiitaapi.templetedefaultにセットしている値を返します。セットされていない場合はnullを返します。
+ * vscodeのconfigを取得します。
  * @returns
  */
-export function qiitaTemplateSetDefault(): interfaces.TypeQiitaTemplateDefault | null {
-  const templateDefault: string =
-    vscode.workspace.getConfiguration('vscode_qiitaapi').templetedefault;
+function getConfig(): vscode.WorkspaceConfiguration {
+  return vscode.workspace.getConfiguration('vscode_qiitaapi');
+}
 
-  //    console.log(`templateDefault : ${templateDefault});
+/**
+ * 旧configurationに設定されている値を新しいconfigurationに移行します。
+ * @param oldConfig 旧configuration名
+ * @param newConfig 新configuration名
+ * @param isDeleteOldConfig 旧configurationを削除するかどうか
+ * @returns
+ */
+export async function migrateConfig(
+  oldConfig: string,
+  newConfig: string,
+  isDeleteOldConfig: boolean,
+) {
+  const config = getConfig();
+  const oldConfigValue = config.inspect(oldConfig);
+  if (oldConfigValue !== undefined) {
+    const keyList = [
+      ['globalValue', 'Global'],
+      ['workspaceValue', 'Workspace'],
+      ['workspaceFolderValue', 'WorkspaceFolder'],
+    ] as const;
+    await Promise.all(
+      keyList.map(async ([key, target]) => {
+        if (oldConfigValue[key] !== undefined) {
+          // 新しいconfigurationに値がセットされていない場合のみ移行する
+          const newConfigValue = config.inspect(newConfig);
+          if (newConfigValue === undefined) {
+            await config.update(newConfig, oldConfigValue[key], vscode.ConfigurationTarget[target]);
+            if (isDeleteOldConfig) {
+              await config.update(oldConfig, undefined, vscode.ConfigurationTarget[target]);
+            }
+          }
+        }
+      }),
+    );
+  }
+}
+/**
+ * vscode_qiitaapi.templateDefaultにセットしている値を返します。セットされていない場合はnullを返します。
+ * @returns
+ */
+export function getTemplateDefault(): interfaces.TypeQiitaTemplateDefault | null {
+  const templateDefault: string = getConfig().templateDefault;
+
   return interfaces.arrayQiitaTemplateDefault.find((e) => e === templateDefault) ?? null;
 }
 
 /**
- * vscode_qiitaapi.templeteDelimiterにセットしている値を返します。セットされていない場合はnullを返します。
+ * vscode_qiitaapi.templateDelimiterにセットしている値を返します。セットされていない場合はnullを返します。
  * @returns
  */
-export function qiitaTemplateGetDelimiter(): interfaces.TypeQiitaTemplateDelimiter | null {
-  const templateDelimiter: string =
-    vscode.workspace.getConfiguration('vscode_qiitaapi').templeteDelimiter;
-
-  console.log(`templateDelimiter : ${templateDelimiter}`);
+export function getTemplateDelimiter(): interfaces.TypeQiitaTemplateDelimiter | null {
+  const templateDelimiter: string = getConfig().templateDelimiter;
   return interfaces.arrayQiitaTemplateDelimiter.find((e) => e === templateDelimiter) ?? null;
 }

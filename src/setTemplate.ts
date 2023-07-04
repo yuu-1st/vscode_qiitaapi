@@ -6,19 +6,19 @@ import {
   createQiitaParameterTemplate,
   readQiitaParameter,
 } from './object/qiitaParameter';
-import { qiitaTemplateSetDefault } from './object/settingsManagement';
+import { getTemplateDefault } from './object/settingsManagement';
 
 /**
  * ファイルの先頭にテンプレートを追加します。
  */
 export function setTemplate() {
-  console.log(`qiitaTemplateSetDefault : ${qiitaTemplateSetDefault()}`);
+  console.log(`qiitaTemplateSetDefault : ${getTemplateDefault()}`);
   // アクティブエディタの取得
   const editor = vscode.window.activeTextEditor;
   if (editor) {
     /** qiitaパラメータ群 */
     const qiitaPrm: QiitaParameter = readQiitaParameter(editor, true);
-    const _default = qiitaTemplateSetDefault();
+    const _default = getTemplateDefault();
     if (_default) {
       addQiitaParameterToTemplateDefault(qiitaPrm, _default);
     }
