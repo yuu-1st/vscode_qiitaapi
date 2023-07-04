@@ -11,6 +11,7 @@ import * as qiita_types from './object/qiitaTypes';
 import { documentRead, documentWrite, getFileExtension } from './object/fileOperating';
 import { execSync } from 'child_process';
 import { QiitaParameter } from './object/interface';
+import { constants } from './constants';
 
 /**
  * qiitaに投稿します。
@@ -21,7 +22,7 @@ export async function qiitaPost() {
   // トークンの確認
   if (!qiitaAccessToken) {
     vscode.window.showErrorMessage(
-      'Qiitaのアクセストークンが未記入か不正です。：vscode_qiitaapi.accesstoken',
+      `Qiitaのアクセストークンが未記入か不正です。：${constants.configuration.accessToken}`,
     );
     return;
   }
@@ -34,7 +35,7 @@ export async function qiitaPost() {
     console.error(e.message);
     if (e.message === '401') {
       vscode.window.showErrorMessage(
-        'アクセストークンのチェックに失敗しました。トークンを確認してください。：vscode_qiitaapi.accesstoken',
+        `アクセストークンのチェックに失敗しました。トークンを確認してください。：${constants.configuration.accessToken}`,
       );
     } else if (e.message === '403') {
       vscode.window.showErrorMessage(

@@ -1,8 +1,7 @@
 // [更新時にVSCode拡張機能/カラーテーマ通知のユーザーに表示することは可能ですか？](https://www.fixes.pub/program/285186.html)
 import * as vscode from 'vscode';
 import { migrateConfig } from './settingsManagement';
-
-const extensionId = 'yuuyu.vscode-qiitaapi';
+import { constants, displayName, extensionId, url } from '../constants';
 
 /**
  * メジャーアップデートかどうか
@@ -59,8 +58,16 @@ export async function executeOnUpdate(previousVersion: string, currentVersion: s
   // 前回のバージョンが0.6.0未満の場合
   if (isMinorUpdate(previousVersion, '0.6.0')) {
     // configuration名の変更
-    await migrateConfig('templetedefault', 'templateDefault', true);
-    migrateConfig('templateDelimiter', 'templateDelimiter', true);
+    await migrateConfig(
+      constants.configuration.templateDefaultTypo,
+      constants.configuration.templateDefault,
+      true,
+    );
+    await migrateConfig(
+      constants.configuration.templateDelimiterTypo,
+      constants.configuration.templateDelimiter,
+      true,
+    );
   }
 }
 
@@ -76,19 +83,17 @@ export async function checkExtensionsUpdate(context: vscode.ExtensionContext) {
     await executeOnUpdate(previousVersion, currentVersion);
     //show whats new notification:
     const actions = [{ title: '更新内容の表示' }, { title: '閉じる' }];
-    vscode.window.showInformationMessage(
-      `vscode_qiitaapi を v${currentVersion} にアップデートしました。`,
-      ...actions,
-    ).then((result) => {
-      if (result !== null) {
-        if (result === actions[0]) {
-          vscode.env.openExternal(
-            vscode.Uri.parse(
-              'https://marketplace.visualstudio.com/items/yuuyu.vscode-qiitaapi/changelog',
-            ),
-          );
+    vscode.window
+      .showInformationMessage(
+        `${displayName} を v${currentVersion} にアップデートしました。`,
+        ...actions,
+      )
+      .then((result) => {
+        if (result !== null) {
+          if (result === actions[0]) {
+            vscode.env.openExternal(vscode.Uri.parse(url.changeLog));
+          }
         }
-      }
-    });
+      });
   }
 }
