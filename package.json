@@ -14,7 +14,10 @@
   "activationEvents": [
     "onCommand:vscode_qiitaapi.post",
     "onCommand:vscode_qiitaapi.set_templete",
-    "onCommand:vscode_qiitaapi.geturl"
+    "onCommand:vscode_qiitaapi.setTemplate",
+    "onCommand:vscode_qiitaapi.geturl",
+    "onCommand:vscode_qiitaapi.getUrl"
+
   ],
   "repository": {
     "type": "git",
@@ -28,11 +31,11 @@
         "title": "qiitaに投稿する"
       },
       {
-        "command": "vscode_qiitaapi.set_templete",
+        "command": "vscode_qiitaapi.setTemplate",
         "title": "qiita テンプレートを付与する"
       },
       {
-        "command": "vscode_qiitaapi.geturl",
+        "command": "vscode_qiitaapi.getUrl",
         "title": "qiita 記事のurlを取得する"
       }
     ],
@@ -45,7 +48,7 @@
             "default": "",
             "description": "qiitaのアクセストークンを設定します。\n注意：setting.jsonに値が直接記述されるため、ワークスペースに保存する場合はgit等の使用にご注意ください。"
           },
-          "vscode_qiitaapi.templetedefault": {
+          "vscode_qiitaapi.templateDefault": {
             "type": "string",
             "default": "no_use",
             "enum": [
@@ -62,7 +65,7 @@
             ],
             "description": "qiita テンプレートを付与する際にデフォルト値をセットします。"
           },
-          "vscode_qiitaapi.templeteDelimiter": {
+          "vscode_qiitaapi.templateDelimiter": {
             "type": "string",
             "default": "comment",
             "enum": [
