@@ -33,6 +33,10 @@
       {
         "command": "vscode_qiitaapi.getUrl",
         "title": "qiita 記事のurlを取得する"
+      },
+      {
+        "command": "vscode_qiitaapi.uploadImage",
+        "title": "qiita 画像をアップロードする"
       }
     ],
     "configuration": [
@@ -73,6 +77,16 @@
               "//**********からなる文字列"
             ],
             "description": "qiita テンプレートの区切り文字を指定します。デフォルトはcommentですが、バージョンアップでhorizonに変更されます"
+          },
+          "vscode_qiitaapi.useCopyInUploadImage": {
+            "type": "boolean",
+            "default": false,
+            "description": "画像アップロード時に生成されるディレクトリ内容を、ハードリンクではなくコピーするかどうかを指定します。"
+          },
+          "vscode_qiitaapi.uploadImageBeforePost": {
+            "type": "boolean",
+            "default": false,
+            "description": "投稿前に画像をアップロードするかどうかを指定します。\n(trueの場合、「vscode_qiitaapi.post」の実行時に「vscode_qiitaapi.uploadImage」を先に自動実行します。)\n現在のデフォルトはfalseですが、バージョンアップでtrueに変更される予定です。"
           }
         }
       }
@@ -88,6 +102,7 @@
   },
   "devDependencies": {
     "@types/glob": "^8.1.0",
+    "@types/marked": "^5.0.0",
     "@types/mocha": "^10.0.1",
     "@types/node": "^20.4.0",
     "@types/vscode": "^1.79.1",
@@ -103,6 +118,7 @@
   },
   "dependencies": {
     "axios": "^1.4.0",
-    "clipboardy": "^2.3.0"
+    "clipboardy": "^2.3.0",
+    "marked": "^5.1.1"
   }
 }

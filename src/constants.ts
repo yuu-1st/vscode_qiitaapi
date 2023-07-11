@@ -22,6 +22,7 @@ export const constants = {
     post: `${displayName}.post`,
     setTemplate: `${displayName}.setTemplate`,
     setTemplateTypo: `${displayName}.set_${templateTypo}`,
+    uploadImage: `${displayName}.uploadImage`,
   },
   configuration: {
     accessToken: 'accesstoken',
@@ -37,4 +38,5 @@ export const constants = {
  */
 export const url = {
   changeLog: 'https://marketplace.visualstudio.com/items/yuuyu.vscode-qiitaapi/changelog',
+  uploadImages: 'https://qiita.com/settings/uploading_images',
 } as const;

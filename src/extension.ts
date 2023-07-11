@@ -7,6 +7,7 @@ import { checkExtensionsUpdate } from './object/checkUpdate';
 import { articleUrl } from './getArticleUrl';
 import { commandIdChange } from './object/commandIdChange';
 import { constants } from './constants';
+import { uploadImages } from './uploadImages';
 
 /**
  * このメソッドは、拡張機能がアクティブ化されたときに呼び出されます
@@ -53,12 +54,21 @@ export async function activate(context: vscode.ExtensionContext) {
    */
   const commandGetUrl = vscode.commands.registerCommand(constants.command.getUrl, articleUrl);
 
+  /**
+   * 画像をアップロードする
+   */
+  const commandUploadImages = vscode.commands.registerCommand(
+    constants.command.uploadImage,
+    uploadImages,
+  );
+
   context.subscriptions.push(
     commandQiitaPost,
     commandSetTemplateTypo,
     commandSetTemplate,
     commandGetUrlTypo,
     commandGetUrl,
+    commandUploadImages,
   );
 }
 
