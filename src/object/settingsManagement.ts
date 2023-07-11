@@ -79,3 +79,10 @@ export function getTemplateDelimiter(): interfaces.TypeQiitaTemplateDelimiter | 
   const templateDelimiter: string = getConfig().templateDelimiter;
   return interfaces.arrayQiitaTemplateDelimiter.find((e) => e === templateDelimiter) ?? null;
 }
+
+/**
+ * vscode_qiitaapi.useCopyInUploadImageにセットしている値を返します。
+ */
+export function getUseCopyInUploadImage(): boolean {
+  return getConfig().useCopyInUploadImage;
+}

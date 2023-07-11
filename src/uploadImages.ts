@@ -3,6 +3,7 @@ import { execSync } from 'child_process';
 import * as vscode from 'vscode';
 import { url } from './constants';
 import {
+  copyFile,
   createDirectory,
   createHardLink,
   deleteDirectory,
@@ -18,6 +19,7 @@ import {
   updateImageUrl,
 } from './object/markdownOperation';
 import { createQiitaParameterTemplate, readQiitaParameter } from './object/qiitaParameter';
+import { getUseCopyInUploadImage } from './object/settingsManagement';
 
 /**
  * 相対パスで記述されている画像のパスを取得し、アップロードできるようにします。
@@ -67,7 +69,7 @@ export const uploadImages = async () => {
         vscode.window.showErrorMessage(`画像が存在しません。${imagePath}`);
         return null;
       }
-      return {imagePath, text: image.text};
+      return { imagePath, text: image.text };
     }),
   ).then((pathList) => {
     return pathList.flatMap((path) => (path ? path : []));
@@ -87,7 +89,9 @@ export const uploadImages = async () => {
   } catch (error) {
     if (error instanceof Error && error.name === 'DirectoryAlreadyExists') {
       // 既にディレクトリが存在する場合はエラーを返す
-      vscode.window.showErrorMessage(`「uploadImages」ディレクトリが既に存在するため、中断しました。${uploadImagesDir}`);
+      vscode.window.showErrorMessage(
+        `「uploadImages」ディレクトリが既に存在するため、中断しました。${uploadImagesDir}`,
+      );
       return;
     }
     vscode.window.showErrorMessage(`エラーが発生しました。`);
@@ -96,13 +100,18 @@ export const uploadImages = async () => {
   // 「uploadImages」ディレクトリに画像をハードリンクする
   Promise.all(
     uploadImagesPathList.map(async (image) => {
-      const {imagePath, text} = image;
+      const { imagePath, text } = image;
       // 画像の拡張子を取得
       const imageExt = getFileExtension(imagePath);
       // ハードリンク先のパスを取得
       const uploadImagePath = `${uploadImagesDir.fsPath}/${text}${imageExt}`;
-      // ハードリンクを作成
-      createHardLink(imagePath, uploadImagePath);
+      if (getUseCopyInUploadImage()) {
+        // コピーを作成
+        copyFile(imagePath, uploadImagePath);
+      } else {
+        // ハードリンクを作成
+        createHardLink(imagePath, uploadImagePath);
+      }
       return uploadImagePath;
     }),
   );
@@ -116,36 +125,35 @@ export const uploadImages = async () => {
     prompt: 'アップロードした画像のURLを入力してください。',
     ignoreFocusOut: true,
   });
-  if (!input) {
-    return;
-  }
   console.log(`input : ${input}`);
-  // 入力された文字列から![alt](url)の配列を作成
+  if (input) {
+    // 入力された文字列から![alt](url)の配列を作成
 
-  function extractImageStrings(str: string): string[] {
-    const regex = /!\[.*?\]\(.*?\)/g;
-    const matches = str.match(regex);
-    return matches ? matches : [];
+    function extractImageStrings(str: string): string[] {
+      const regex = /!\[.*?\]\(.*?\)/g;
+      const matches = str.match(regex);
+      return matches ? matches : [];
+    }
+
+    const inputImages = extractImageStrings(input);
+    console.log(`inputImages : ${inputImages}`);
+    // 入力された文字列から画像のURLを取得
+    const urlList = inputImages.map((image) => {
+      const regex = /!\[(.*?)\]\((.*?)\)/;
+      const matches = image.match(regex);
+      assert(matches);
+      const [, text, href] = matches;
+      // textは拡張子を除いた画像名
+      return { text: text.replace(/\.[^.]+$/, ''), href };
+    });
+
+    // 画像のURLを更新
+    const updatedToken = updateImageUrl(token, urlList);
+    // 更新したTokenからMarkdownを作成
+    const updatedMarkdown = parseTokensToMarkdown(updatedToken);
+    // Markdownをアクティブエディタに書き込む
+    documentWrite(editor, `${createQiitaParameterTemplate(qiitaPrm)}\n${updatedMarkdown}`);
   }
-
-  const inputImages = extractImageStrings(input);
-  console.log(`inputImages : ${inputImages}`);
-  // 入力された文字列から画像のURLを取得
-  const urlList = inputImages.map((image) => {
-    const regex = /!\[(.*?)\]\((.*?)\)/;
-    const matches = image.match(regex);
-    assert(matches);
-    const [, text, href] = matches;
-    // textは拡張子を除いた画像名
-    return { text: text.replace(/\.[^.]+$/, ''), href };
-  });
-
-  // 画像のURLを更新
-  const updatedToken = updateImageUrl(token, urlList);
-  // 更新したTokenからMarkdownを作成
-  const updatedMarkdown = parseTokensToMarkdown(updatedToken);
-  // Markdownをアクティブエディタに書き込む
-  documentWrite(editor, `${createQiitaParameterTemplate(qiitaPrm)}\n${updatedMarkdown}`);
   // 「uploadImages」ディレクトリを削除
   deleteDirectory(uploadImagesDir);
 };

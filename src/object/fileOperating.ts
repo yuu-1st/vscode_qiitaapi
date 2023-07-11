@@ -85,9 +85,20 @@ export async function existsFileOrDirectory(path: vscode.Uri) {
 
 /**
  * ハードリンクを作成します。
+ * @param src リンク元
+ * @param dest リンク先
  */
 export function createHardLink(src: string, dest: string): void {
   fs.linkSync(src, dest);
+}
+
+/**
+ * ファイルをコピーします。
+ * @param src コピー元
+ * @param dest コピー先
+ */
+export function copyFile(src: string, dest: string): void {
+  vscode.workspace.fs.copy(vscode.Uri.file(src), vscode.Uri.file(dest));
 }
 
 /**

@@ -77,6 +77,11 @@
               "//**********からなる文字列"
             ],
             "description": "qiita テンプレートの区切り文字を指定します。デフォルトはcommentですが、バージョンアップでhorizonに変更されます"
+          },
+          "vscode_qiitaapi.useCopyInUploadImage": {
+            "type": "boolean",
+            "default": false,
+            "description": "画像アップロード時に生成されるディレクトリ内容を、ハードリンクではなくコピーするかどうかを指定します。"
           }
         }
       }
