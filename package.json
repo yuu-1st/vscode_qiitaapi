@@ -67,7 +67,7 @@
           },
           "vscode_qiitaapi.templateDelimiter": {
             "type": "string",
-            "default": "comment",
+            "default": "horizon",
             "enum": [
               "horizon",
               "comment"
@@ -76,7 +76,7 @@
               "---からなる文字列",
               "//**********からなる文字列"
             ],
-            "description": "qiita テンプレートの区切り文字を指定します。デフォルトはcommentですが、バージョンアップでhorizonに変更されます"
+            "description": "qiita テンプレートの区切り文字を指定します。"
           },
           "vscode_qiitaapi.useCopyInUploadImage": {
             "type": "boolean",
