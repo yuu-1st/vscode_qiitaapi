@@ -33,6 +33,10 @@
       {
         "command": "vscode_qiitaapi.getUrl",
         "title": "qiita 記事のurlを取得する"
+      },
+      {
+        "command": "vscode_qiitaapi.uploadImage",
+        "title": "qiita 画像をアップロードする"
       }
     ],
     "configuration": [
@@ -88,6 +92,7 @@
   },
   "devDependencies": {
     "@types/glob": "^8.1.0",
+    "@types/marked": "^5.0.0",
     "@types/mocha": "^10.0.1",
     "@types/node": "^20.4.0",
     "@types/vscode": "^1.79.1",
@@ -103,6 +108,7 @@
   },
   "dependencies": {
     "axios": "^1.4.0",
-    "clipboardy": "^2.3.0"
+    "clipboardy": "^2.3.0",
+    "marked": "^5.1.1"
   }
 }

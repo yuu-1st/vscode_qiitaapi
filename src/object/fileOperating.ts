@@ -1,3 +1,4 @@
+import fs from 'fs';
 import * as vscode from 'vscode';
 
 /**
@@ -63,4 +64,59 @@ export function getFileExtension(fileName: string): string | null {
   } else {
     return null;
   }
+}
+
+/**
+ * ファイルもしくはディレクトリが存在するかどうかを返します。
+ * @param path
+ * @returns
+ */
+export async function existsFileOrDirectory(path: vscode.Uri) {
+  try {
+    await vscode.workspace.fs.stat(path);
+  } catch (error) {
+    if (error instanceof Error && error.name === 'EntryNotFound (FileSystemError)') {
+      return false;
+    }
+    throw error;
+  }
+  return true;
+}
+
+/**
+ * ハードリンクを作成します。
+ */
+export function createHardLink(src: string, dest: string): void {
+  fs.linkSync(src, dest);
+}
+
+/**
+ * ディレクトリを作成します。
+ * @param dirPath
+ * @param isOverwrite 既にディレクトリが存在する場合に上書きするかどうか
+ * @returns
+ * @throws ディレクトリが存在し、かつ上書きしない場合
+ */
+export async function createDirectory(dirPath: vscode.Uri, isOverwrite: boolean = false) {
+  // await vscode.workspace.fs.createDirectory(vscode.Uri.file(dirPath));
+  // ディレクトリが存在するかどうかのチェック
+  if (await existsFileOrDirectory(dirPath)) {
+    if (!isOverwrite) {
+      const e = new Error(`ディレクトリが既に存在します。${dirPath}`);
+      e.name = 'DirectoryAlreadyExists';
+      throw e;
+    }
+  }
+  // fs.mkdirSync(dirPath);
+  await vscode.workspace.fs.createDirectory(dirPath);
+}
+
+/**
+ * ディレクトリを削除します。
+ * @param dirPath
+ * @param recursive ディレクトリを再帰的に削除するかどうか
+ * @returns
+ */
+export async function deleteDirectory(dirPath: vscode.Uri, recursive: boolean = true) {
+  await vscode.workspace.fs.delete(dirPath, { recursive });
 }
