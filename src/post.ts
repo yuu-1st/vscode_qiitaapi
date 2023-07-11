@@ -12,6 +12,7 @@ import { documentRead, documentWrite, getFileExtension } from './object/fileOper
 import { execSync } from 'child_process';
 import { QiitaParameter } from './object/interface';
 import { constants } from './constants';
+import { uploadImages } from './uploadImages';
 
 /**
  * qiitaに投稿します。
@@ -71,6 +72,14 @@ export async function qiitaPost() {
         `対応していない拡張子のファイルはアップロードできません。：${ext}`,
       );
       return;
+    }
+
+    // 画像のアップロード
+    if (set_management.getUploadImageBeforePost()) {
+      const uploadImage = await uploadImages(true);
+      if (!uploadImage) {
+        return;
+      }
     }
 
     // qiita IDが正しいかチェックする

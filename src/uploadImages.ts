@@ -20,21 +20,24 @@ import {
 } from './object/markdownOperation';
 import { createQiitaParameterTemplate, readQiitaParameter } from './object/qiitaParameter';
 import { getUseCopyInUploadImage } from './object/settingsManagement';
+import path from 'path';
 
 /**
  * 相対パスで記述されている画像のパスを取得し、アップロードできるようにします。
+ * @param isExistNextCode この関数の後に実行されるコードが存在するかどうか
+ * @returns 続行できるかどうか
  */
-export const uploadImages = async () => {
+export const uploadImages = async (isExistNextCode: boolean) => {
   // アクティブエディタの取得
   const editor = vscode.window.activeTextEditor;
   if (!editor) {
     vscode.window.showErrorMessage('アクティブエディタが取得できませんでした。');
-    return;
+    return false;
   }
   // アクティブエディタが保存されたファイルかどうかのチェック
   if (editor.document.isUntitled) {
     vscode.window.showErrorMessage('アクティブエディタは保存されていません。');
-    return;
+    return false;
   }
 
   // アクティブエディタのパスを取得
@@ -54,16 +57,25 @@ export const uploadImages = async () => {
   });
   // ローカルパスの画像がない場合は終了
   if (relativeImages.length === 0) {
-    vscode.window.showInformationMessage('アップロードできる画像はありませんでした。');
-    return;
+    if (!isExistNextCode) {
+      vscode.window.showInformationMessage('アップロードできる画像はありませんでした。');
+    }
+    return true;
   }
   // 画像存在確認
   const uploadImagesPathList = await Promise.all(
     relativeImages.map(async (image) => {
       // 画像のパスを取得
-      const imagePath = `${activePath.fsPath.substring(0, activePath.fsPath.lastIndexOf('/'))}/${
-        image.href
-      }`;
+      const imagePath = (() => {
+        if (path.isAbsolute(image.href)) {
+          // 絶対パスの場合
+          return image.href;
+        }
+        // 相対パスの場合
+        return `${activePath.fsPath.substring(0, activePath.fsPath.lastIndexOf('/'))}/${
+          image.href
+        }`;
+      })();
       // 画像の拡張子を取得
       if (!(await existsFileOrDirectory(vscode.Uri.file(imagePath)))) {
         vscode.window.showErrorMessage(`画像が存在しません。${imagePath}`);
@@ -75,8 +87,19 @@ export const uploadImages = async () => {
     return pathList.flatMap((path) => (path ? path : []));
   });
   if (uploadImagesPathList.length === 0) {
-    vscode.window.showInformationMessage('アップロードできる画像はありませんでした。');
-    return;
+    if (!isExistNextCode) {
+      vscode.window.showInformationMessage('アップロードできる画像はありませんでした。');
+    } else {
+      const result = await vscode.window.showInformationMessage(
+        'アップロードできる画像はありませんでした。そのままqiitaに投稿しますか？',
+        'はい',
+        'いいえ',
+      );
+      if (result === 'はい') {
+        return true;
+      }
+    }
+    return false;
   }
 
   // アクティブエディタのディレクトリに「uploadImages」という名前のディレクトリを作成
@@ -156,4 +179,5 @@ export const uploadImages = async () => {
   }
   // 「uploadImages」ディレクトリを削除
   deleteDirectory(uploadImagesDir);
+  return true;
 };

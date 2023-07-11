@@ -86,3 +86,10 @@ export function getTemplateDelimiter(): interfaces.TypeQiitaTemplateDelimiter | 
 export function getUseCopyInUploadImage(): boolean {
   return getConfig().useCopyInUploadImage;
 }
+
+/**
+ * vscode_qiitaapi.uploadImageBeforePostにセットしている値を返します。
+ */
+export function getUploadImageBeforePost(): boolean {
+  return getConfig().uploadImageBeforePost;
+}
