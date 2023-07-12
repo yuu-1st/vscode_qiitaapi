@@ -23,6 +23,19 @@ import { getUseCopyInUploadImage } from './object/settingsManagement';
 import path from 'path';
 
 /**
+ * 処理を続行するかをユーザーに確認します。
+ * @param message 確認メッセージ。「はい」がtrueとなるようなメッセージを指定してください。
+ */
+async function confirmContinue(message: string): Promise<boolean> {
+  const result = await vscode.window.showInformationMessage(message, 'はい', 'いいえ');
+  if (result === 'はい') {
+    return true;
+  }
+  return false;
+}
+
+
+/**
  * 相対パスで記述されている画像のパスを取得し、アップロードできるようにします。
  * @param isExistNextCode この関数の後に実行されるコードが存在するかどうか
  * @returns 続行できるかどうか
@@ -90,14 +103,7 @@ export const uploadImages = async (isExistNextCode: boolean) => {
     if (!isExistNextCode) {
       vscode.window.showInformationMessage('アップロードできる画像はありませんでした。');
     } else {
-      const result = await vscode.window.showInformationMessage(
-        'アップロードできる画像はありませんでした。そのままqiitaに投稿しますか？',
-        'はい',
-        'いいえ',
-      );
-      if (result === 'はい') {
-        return true;
-      }
+      return await confirmContinue('アップロードできる画像はありませんでした。そのままqiitaに投稿しますか？');
     }
     return false;
   }
@@ -149,35 +155,52 @@ export const uploadImages = async (isExistNextCode: boolean) => {
     ignoreFocusOut: true,
   });
   console.log(`input : ${input}`);
-  if (input) {
-    // 入力された文字列から![alt](url)の配列を作成
+  if (typeof input === 'undefined') {
+    // 「uploadImages」ディレクトリを削除
+    deleteDirectory(uploadImagesDir);
 
-    function extractImageStrings(str: string): string[] {
-      const regex = /!\[.*?\]\(.*?\)/g;
-      const matches = str.match(regex);
-      return matches ? matches : [];
-    }
-
-    const inputImages = extractImageStrings(input);
-    console.log(`inputImages : ${inputImages}`);
-    // 入力された文字列から画像のURLを取得
-    const urlList = inputImages.map((image) => {
-      const regex = /!\[(.*?)\]\((.*?)\)/;
-      const matches = image.match(regex);
-      assert(matches);
-      const [, text, href] = matches;
-      // textは拡張子を除いた画像名
-      return { text: text.replace(/\.[^.]+$/, ''), href };
-    });
-
-    // 画像のURLを更新
-    const updatedToken = updateImageUrl(token, urlList);
-    // 更新したTokenからMarkdownを作成
-    const updatedMarkdown = parseTokensToMarkdown(updatedToken);
-    // Markdownをアクティブエディタに書き込む
-    documentWrite(editor, `${createQiitaParameterTemplate(qiitaPrm)}\n${updatedMarkdown}`);
+    return false;
   }
+
+  // 入力された文字列から![alt](url)の配列を作成
+  function extractImageStrings(str: string): string[] {
+    const regex = /!\[.*?\]\(.*?\)/g;
+    const matches = str.match(regex);
+    return matches ? matches : [];
+  }
+
+  const inputImages = extractImageStrings(input);
+  console.log(`inputImages : ${inputImages}`);
+  // 入力された文字列から画像のURLを取得
+  const urlList = inputImages.map((image) => {
+    const regex = /!\[(.*?)\]\((.*?)\)/;
+    const matches = image.match(regex);
+    assert(matches);
+    const [, text, href] = matches;
+    // textは拡張子を除いた画像名
+    return { text: text.replace(/\.[^.]+$/, ''), href };
+  });
+
+  // 画像のURLを更新
+  const updatedToken = updateImageUrl(token, urlList);
+  // 更新したTokenからMarkdownを作成
+  const updatedMarkdown = parseTokensToMarkdown(updatedToken);
+  // Markdownをアクティブエディタに書き込む
+  documentWrite(editor, `${createQiitaParameterTemplate(qiitaPrm)}\n${updatedMarkdown}`);
+
   // 「uploadImages」ディレクトリを削除
   deleteDirectory(uploadImagesDir);
+
+  // isExistNextCodeがtrueの場合
+  if (isExistNextCode) {
+    // ローカルパスの画像があるか再度確認
+    const localImages = getImageInfoFromTokens(updatedToken).filter((image) => {
+      return !image.href.match(/^(http|https):\/\//);
+    });
+    if (localImages.length > 0) {
+      // 続行するか確認
+      return await confirmContinue('ローカルパスの画像が残っていますが、操作を続行しますか？');
+    }
+  }
   return true;
 };
