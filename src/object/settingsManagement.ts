@@ -45,16 +45,22 @@ export async function migrateConfig(
       ['workspaceValue', 'Workspace'],
       ['workspaceFolderValue', 'WorkspaceFolder'],
     ] as const;
+    // 新しいconfigurationに値がセットされていない場合のみ移行する
+    const newConfigValue = config.inspect(newConfig);
+    console.dir(newConfigValue, { depth: null });
+    if (typeof newConfigValue !== 'undefined') {
+      // keyListのいずれかの値がundefinedでない場合は移行しない
+      if (keyList.some(([key, target]) => newConfigValue[key] !== undefined)) {
+        return;
+      }
+    }
+    // 移行処理
     await Promise.all(
       keyList.map(async ([key, target]) => {
         if (oldConfigValue[key] !== undefined) {
-          // 新しいconfigurationに値がセットされていない場合のみ移行する
-          const newConfigValue = config.inspect(newConfig);
-          if (newConfigValue === undefined) {
-            await config.update(newConfig, oldConfigValue[key], vscode.ConfigurationTarget[target]);
-            if (isDeleteOldConfig) {
-              await config.update(oldConfig, undefined, vscode.ConfigurationTarget[target]);
-            }
+          await config.update(newConfig, oldConfigValue[key], vscode.ConfigurationTarget[target]);
+          if (isDeleteOldConfig) {
+            await config.update(oldConfig, undefined, vscode.ConfigurationTarget[target]);
           }
         }
       }),
