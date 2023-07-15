@@ -2,7 +2,7 @@
   "name": "vscode-qiitaapi",
   "displayName": "vscode_qiitaapi",
   "description": "use qiita api to vscode",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "publisher": "yuuyu",
   "engines": {
     "vscode": "^1.79.1"
