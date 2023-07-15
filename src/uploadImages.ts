@@ -34,7 +34,6 @@ async function confirmContinue(message: string): Promise<boolean> {
   return false;
 }
 
-
 /**
  * 相対パスで記述されている画像のパスを取得し、アップロードできるようにします。
  * @param isExistNextCode この関数の後に実行されるコードが存在するかどうか
@@ -103,7 +102,9 @@ export const uploadImages = async (isExistNextCode: boolean) => {
     if (!isExistNextCode) {
       vscode.window.showInformationMessage('アップロードできる画像はありませんでした。');
     } else {
-      return await confirmContinue('アップロードできる画像はありませんでした。そのままqiitaに投稿しますか？');
+      return await confirmContinue(
+        'アップロードできる画像はありませんでした。そのままqiitaに投稿しますか？',
+      );
     }
     return false;
   }
@@ -148,7 +149,8 @@ export const uploadImages = async (isExistNextCode: boolean) => {
   // qiitaの画像アップロードページを開く
   vscode.env.openExternal(vscode.Uri.parse(url.uploadImages));
   // 「uploadImages」ディレクトリを開く
-  execSync(`open ${uploadImagesDir.fsPath}`);
+  vscode.env.openExternal(uploadImagesDir);
+
   // 入力フォームを開く
   const input = await vscode.window.showInputBox({
     prompt: 'アップロードした画像のURLを入力してください。',
