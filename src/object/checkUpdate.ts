@@ -77,7 +77,7 @@ export async function checkExtensionsUpdate(context: vscode.ExtensionContext) {
   /** 現在のバージョンを取得 */
   const currentVersion = vscode.extensions.getExtension(extensionId)!.packageJSON.version;
   // 現在のバージョンを保存
-  // context.globalState.update(extensionId, currentVersion);
+  context.globalState.update(extensionId, currentVersion);
   if (previousVersion !== undefined && isMinorUpdate(previousVersion, currentVersion)) {
     // バージョンアップ時に実行する処理
     await executeOnUpdate(previousVersion, currentVersion);
