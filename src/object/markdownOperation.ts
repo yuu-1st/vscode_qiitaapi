@@ -36,20 +36,21 @@ export function getImageInfoFromTokens(tokens: marked.TokensList): marked.Tokens
 export function updateImageUrl(
   tokens: marked.TokensList,
   urlList: {
-    href: string;
-    text: string;
+    syntax: string;
+    url: string;
+    alt: string;
   }[],
 ): marked.TokensList {
   const newTokens: marked.TokensList = tokens.map((token) => {
     if (token.type === 'paragraph') {
       const newToken = token.tokens.map((token2) => {
         if (token2.type === 'image') {
-          const urlInfo = urlList.find((urlInfo) => urlInfo.text === token2.text);
+          const urlInfo = urlList.find((urlInfo) => urlInfo.alt === token2.text);
           if (urlInfo) {
             const beforeHref = token2.href;
             const beforeRaw = token2.raw;
-            token2.raw = token2.raw.replace(beforeHref, urlInfo.href);
-            token2.href = urlInfo.href;
+            token2.raw = token2.raw.replace(beforeHref, urlInfo.url);
+            token2.href = urlInfo.url;
 
             token.raw = token.raw.replace(beforeRaw, token2.raw);
             token.text = token.text.replace(beforeRaw, token2.raw);

@@ -1,5 +1,5 @@
-import assert from 'assert';
-import { execSync } from 'child_process';
+import { marked } from 'marked';
+import path from 'path';
 import * as vscode from 'vscode';
 import { url } from './constants';
 import {
@@ -20,7 +20,6 @@ import {
 } from './object/markdownOperation';
 import { createQiitaParameterTemplate, readQiitaParameter } from './object/qiitaParameter';
 import { getUseCopyInUploadImage } from './object/settingsManagement';
-import path from 'path';
 
 /**
  * 処理を続行するかをユーザーに確認します。
@@ -32,6 +31,34 @@ async function confirmContinue(message: string): Promise<boolean> {
     return true;
   }
   return false;
+}
+
+/**
+ * 複数の連なる画像タグからタグと画像のパスを取得します。
+ * @param str 画像タグの連なり
+ * @returns syntax: '\!\[alt](url)'; alt: string; url: string の配列
+ */
+function extractImageStrings(str: string): { syntax: string; alt: string; url: string }[] {
+  const regex = /!\[(.*?)\]\((.*?)\)/g;
+  const matches = str.matchAll(regex);
+  const result: { syntax: string; alt: string; url: string }[] = [];
+
+  for (const match of matches) {
+    const [syntax, alt, url] = match;
+    result.push({ syntax, alt, url });
+  }
+
+  return result;
+}
+
+/**
+ * tokenのリストから、ローカルパスのトークンを取得します。
+ * @param tokens
+ */
+function getLocalPathTokens(tokens: marked.TokensList): marked.Tokens.Image[] {
+  return getImageInfoFromTokens(tokens).filter((image) => {
+    return !image.href.match(/^(http|https):\/\//);
+  });
 }
 
 /**
@@ -62,11 +89,8 @@ export const uploadImages = async (isExistNextCode: boolean) => {
 
   // 画像一覧を取得
   const token = parseMarkdownToTokens(body);
-  const images = getImageInfoFromTokens(token);
   // ローカルパスの画像一覧を取得
-  const relativeImages = images.filter((image) => {
-    return !image.href.match(/^(http|https):\/\//);
-  });
+  const relativeImages = getLocalPathTokens(token);
   // ローカルパスの画像がない場合は終了
   if (relativeImages.length === 0) {
     if (!isExistNextCode) {
@@ -164,27 +188,14 @@ export const uploadImages = async (isExistNextCode: boolean) => {
     return false;
   }
 
-  // 入力された文字列から![alt](url)の配列を作成
-  function extractImageStrings(str: string): string[] {
-    const regex = /!\[.*?\]\(.*?\)/g;
-    const matches = str.match(regex);
-    return matches ? matches : [];
-  }
+  // // 入力された文字列から![alt](url)の配列を作成
+  const imageList = extractImageStrings(input);
 
-  const inputImages = extractImageStrings(input);
-  console.log(`inputImages : ${inputImages}`);
-  // 入力された文字列から画像のURLを取得
-  const urlList = inputImages.map((image) => {
-    const regex = /!\[(.*?)\]\((.*?)\)/;
-    const matches = image.match(regex);
-    assert(matches);
-    const [, text, href] = matches;
-    // textは拡張子を除いた画像名
-    return { text: text.replace(/\.[^.]+$/, ''), href };
-  });
-
-  // 画像のURLを更新
-  const updatedToken = updateImageUrl(token, urlList);
+  // 画像のURLを更新(拡張子を除く)
+  const updatedToken = updateImageUrl(
+    token,
+    imageList.map((image) => ({ ...image, alt: image.alt.replace(/\.[^.]+$/, '') })),
+  );
   // 更新したTokenからMarkdownを作成
   const updatedMarkdown = parseTokensToMarkdown(updatedToken);
   // Markdownをアクティブエディタに書き込む
@@ -196,9 +207,7 @@ export const uploadImages = async (isExistNextCode: boolean) => {
   // isExistNextCodeがtrueの場合
   if (isExistNextCode) {
     // ローカルパスの画像があるか再度確認
-    const localImages = getImageInfoFromTokens(updatedToken).filter((image) => {
-      return !image.href.match(/^(http|https):\/\//);
-    });
+    const localImages = getLocalPathTokens(updatedToken);
     if (localImages.length > 0) {
       // 続行するか確認
       return await confirmContinue('ローカルパスの画像が残っていますが、操作を続行しますか？');
