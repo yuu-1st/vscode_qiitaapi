@@ -1,52 +1,38 @@
 // [更新時にVSCode拡張機能/カラーテーマ通知のユーザーに表示することは可能ですか？](https://www.fixes.pub/program/285186.html)
+import { diff as semverDiff } from 'semver';
 import * as vscode from 'vscode';
-import { migrateConfig } from './settingsManagement';
 import { constants, displayName, extensionId, url } from '../constants';
+import { migrateConfig } from './settingsManagement';
 
 /**
- * メジャーアップデートかどうか
- * 参照元の参照元：https://stackoverflow.com/a/66303259/3073272
- * @param previousVersion
- * @param currentVersion
+ * メジャーアップデートかどうか。
+ * @param previousVersion 過去のバージョン
+ * @param currentVersion 現在のバージョン
  * @returns
  */
 function isMajorUpdate(previousVersion: string, currentVersion: string) {
-  //rain-check for malformed string
-  if (previousVersion.indexOf('.') === -1) {
-    return true;
-  }
-  //returns int array [1,1,1] i.e. [major,minor,patch]
-  var previousVerArr = previousVersion.split('.').map(Number);
-  var currentVerArr = currentVersion.split('.').map(Number);
-  if (currentVerArr[0] > previousVerArr[0]) {
-    return true;
-  } else {
-    return false;
-  }
+  return semverDiff(previousVersion, currentVersion) === 'major';
 }
 
 /**
- * マイナーアップデートかどうか。これはメジャーバージョンのアップデートによりマイナーバージョンが0になった時もtrueを返します。
- * 参照元の参照元：https://stackoverflow.com/a/66303259/3073272
- * @param previousVersion
- * @param currentVersion
+ * マイナーアップデートかどうか。
+ * @param previousVersion 過去のバージョン
+ * @param currentVersion 現在のバージョン
+ * @param includeMajor メジャーアップデートもtrueを返すかどうか
  * @returns
+ * @example isMinorUpdate('1.2.3', '1.3.0') => true
+ * @example isMinorUpdate('1.2.3', '2.0.0') => true
+ * @example isMinorUpdate('1.2.3', '2.0.0', false) => false
+ * @example isMinorUpdate('1.2.3', '1.2.4') => false
  */
-function isMinorUpdate(previousVersion: string, currentVersion: string) {
-  //rain-check for malformed string
-  if (previousVersion.indexOf('.') === -1) {
+function isMinorUpdate(previousVersion: string, currentVersion: string, includeMajor = true) {
+  if (semverDiff(previousVersion, currentVersion) === 'minor') {
     return true;
   }
-  //returns int array [1,1,1] i.e. [major,minor,patch]
-  var previousVerArr = previousVersion.split('.').map(Number);
-  var currentVerArr = currentVersion.split('.').map(Number);
-  if (currentVerArr[1] === 0 && isMajorUpdate(previousVersion, currentVersion) === true) {
+  if (includeMajor && isMajorUpdate(previousVersion, currentVersion)) {
     return true;
-  } else if (currentVerArr[1] > previousVerArr[1]) {
-    return true;
-  } else {
-    return false;
   }
+  return false;
 }
 
 /**
