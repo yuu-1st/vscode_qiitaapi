@@ -58,7 +58,7 @@ export function documentWrite(
  */
 export function getFileExtension(fileName: string): string | null {
   const matchedExt = fileName.match(/^(.+?)(\.[^.]+)?$/) ?? [];
-  const [, name, ext] = matchedExt.map((match) => match ?? '');
+  const [, , ext] = matchedExt.map((match) => match ?? '');
   if (ext) {
     return ext;
   } else {
@@ -109,7 +109,6 @@ export function copyFile(src: string, dest: string): void {
  * @throws ディレクトリが存在し、かつ上書きしない場合
  */
 export async function createDirectory(dirPath: vscode.Uri, isOverwrite: boolean = false) {
-  // await vscode.workspace.fs.createDirectory(vscode.Uri.file(dirPath));
   // ディレクトリが存在するかどうかのチェック
   if (await existsFileOrDirectory(dirPath)) {
     if (!isOverwrite) {
@@ -118,7 +117,6 @@ export async function createDirectory(dirPath: vscode.Uri, isOverwrite: boolean 
       throw e;
     }
   }
-  // fs.mkdirSync(dirPath);
   await vscode.workspace.fs.createDirectory(dirPath);
 }
 

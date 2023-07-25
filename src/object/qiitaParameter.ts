@@ -52,7 +52,7 @@ export function readQiitaParameter(
         break;
       }
     } else {
-      const strBefore = /^ *\*? *([^: ]*) *:/.exec(text);
+      const strBefore = /^ ?\*? ?([^: ]*) ?:/.exec(text.replace(/ +/g, ' '));
       let strAfter: RegExpExecArray | string | null = /^[^:]*:(.*)$/.exec(text);
       // 整形。string型にする
       if (strAfter && strAfter[1]) {
@@ -176,7 +176,6 @@ export async function addQiitaParameter(
         } else {
           qiitaPrm.title = e;
         }
-        return;
       });
     if (qiitaPrm.title.length === 0) {
       return null;
@@ -278,20 +277,23 @@ export function createQiitaParameterTemplate(qiitaPrm: QiitaParameter | null): s
   if (qiitaPrm) {
     (Object.keys(qiitaPrm) as (keyof QiitaParameter)[]).forEach((key) => {
       if (setKeys.find((e) => e === key)) {
-        let objectValue = qiitaPrm[key];
-        let value = '';
-        if (objectValue === null) {
-        } else if (typeof objectValue === 'string') {
-          value = objectValue;
-        } else if (typeof objectValue === 'boolean') {
-          value = objectValue ? 'true' : 'false';
-        } else if (typeof objectValue === 'object') {
-          value = objectValue.join(', ');
-        } else if (typeof objectValue === 'number') {
-          value = objectValue.toString();
-        } else {
-          const a: never = objectValue;
-        }
+        const objectValue = qiitaPrm[key];
+        const value = (() => {
+          if (objectValue === null) {
+            return '';
+          } else if (typeof objectValue === 'string') {
+            return objectValue;
+          } else if (typeof objectValue === 'boolean') {
+            return objectValue ? 'true' : 'false';
+          } else if (typeof objectValue === 'object') {
+            return objectValue.join(', ');
+          } else if (typeof objectValue === 'number') {
+            return objectValue.toString();
+          } else {
+            const a: never = objectValue;
+            throw new Error(`Unexpected type. ${a}`);
+          }
+        })();
         returnvalue += infoMessageSet(key, maxLength, needAsterisk, value);
       }
     });

@@ -1,18 +1,44 @@
+import assert from 'assert';
+import { execSync } from 'child_process';
 import * as vscode from 'vscode';
+import { constants } from './constants';
+import { ConnectQiitaApi } from './object/connectQiitaApi';
+import { documentRead, documentWrite, getFileExtension } from './object/fileOperating';
+import { QiitaParameter } from './object/interface';
 import {
-  readQiitaParameter,
   addQiitaParameter,
   createQiitaParameterTemplate,
   getUrlFromQiitaParameter,
+  readQiitaParameter,
 } from './object/qiitaParameter';
-import * as set_management from './object/settingsManagement';
-import { ConnectQiitaApi } from './object/connectQiitaApi';
 import * as qiita_types from './object/qiitaTypes';
-import { documentRead, documentWrite, getFileExtension } from './object/fileOperating';
-import { execSync } from 'child_process';
-import { QiitaParameter } from './object/interface';
-import { constants } from './constants';
+import * as set_management from './object/settingsManagement';
 import { uploadImages } from './uploadImages';
+
+/**
+ * Connect_Qiita_APIクラスから例外が戻ってきた時にエラーメッセージを表示します。
+ * @param e
+ */
+function connectionExceptionMessage(e: Error) {
+  console.error(e.message);
+  if (e.message === '401') {
+    vscode.window.showErrorMessage(
+      `アクセストークンのチェックに失敗しました。トークンを確認してください。：${constants.configuration.accessToken}`,
+    );
+  } else if (e.message === '403') {
+    vscode.window.showErrorMessage(
+      '通信が拒否されました。トークンに権限があるか確認してください。',
+    );
+  } else if (e.message === '404') {
+    vscode.window.showErrorMessage('qiitaの記事が見つかりませんでした。更新できませんでした。');
+  } else if (e.message === '-100') {
+    vscode.window.showErrorMessage(
+      '通信に成功しましたが、受信したデータが破損していたため、続行できません。',
+    );
+  } else {
+    vscode.window.showErrorMessage('通信にエラーが発生したため、続行できません。');
+  }
+}
 
 /**
  * qiitaに投稿します。
@@ -28,40 +54,14 @@ export async function qiitaPost() {
     return;
   }
 
-  /**
-   * Connect_Qiita_APIクラスから例外が戻ってきた時にエラーメッセージを表示します。
-   * @param e
-   */
-  const connectionExceptionMessage = (e: Error) => {
-    console.error(e.message);
-    if (e.message === '401') {
-      vscode.window.showErrorMessage(
-        `アクセストークンのチェックに失敗しました。トークンを確認してください。：${constants.configuration.accessToken}`,
-      );
-    } else if (e.message === '403') {
-      vscode.window.showErrorMessage(
-        '通信が拒否されました。トークンに権限があるか確認してください。',
-      );
-    } else if (e.message === '404') {
-      vscode.window.showErrorMessage('qiitaの記事が見つかりませんでした。更新できませんでした。');
-    } else if (e.message === '-100') {
-      vscode.window.showErrorMessage(
-        '通信に成功しましたが、受信したデータが破損していたため、続行できません。',
-      );
-    } else {
-      vscode.window.showErrorMessage('通信にエラーが発生したため、続行できません。');
-    }
-  };
-
   // アクティブエディタの取得
   const editor = vscode.window.activeTextEditor;
   if (editor) {
     let fileExtension = '';
     // [[JS] もう少し厳密に URL からファイル名等を取得する正規表現 - Qiita](https://qiita.com/kerupani129/items/adc0fba4ab248330e443)
     // ファイル拡張子の判断
-    const ext = getFileExtension(editor.document.fileName);
-    if (!ext) {
-    } else if (/^.md$/i.test(ext)) {
+    const ext = getFileExtension(editor.document.fileName) ?? '';
+    if (/^.md$/i.test(ext)) {
       fileExtension = 'md';
     } else if (/^.org$/i.test(ext)) {
       fileExtension = 'org';
@@ -143,10 +143,9 @@ export async function qiitaPost() {
       }
       vscode.window.showInformationMessage('Qiitaに投稿しました。', '表示').then((e) => {
         if (e === '表示') {
-          if (qiitaPrm) {
-            const url = getUrlFromQiitaParameter(qiitaPrm) ?? '';
-            vscode.env.openExternal(vscode.Uri.parse(url));
-          }
+          assert(qiitaPrm);
+          const url = getUrlFromQiitaParameter(qiitaPrm) ?? '';
+          vscode.env.openExternal(vscode.Uri.parse(url));
         }
       });
 
