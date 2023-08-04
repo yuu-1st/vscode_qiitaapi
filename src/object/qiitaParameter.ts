@@ -3,20 +3,103 @@ import { documentRead } from './fileOperating';
 import { QiitaParameter, TypeQiitaTemplateDefault } from './interface';
 import { getTemplateDelimiter } from './settingsManagement';
 
+type QiitaParameterLineErrorType = 'qiita_id' | 'tags' | 'title' | 'null';
+
+interface QiitaParameterLineReturnError {
+  error: string;
+  errorType: QiitaParameterLineErrorType;
+}
+
+type QiitaParameterLineReturn<K extends keyof QiitaParameter> = {
+  key: K;
+  value: QiitaParameter[K];
+} & Partial<QiitaParameterLineReturnError>;
+
+/** 開始/終了の目印となる文字列の正規表現。ちなみに「//**(*は最低10)」という文字列 */
+const keyRegularExpression = /^\/\/\*{10,}$|^---$/;
+
+/**
+ * qiitaパラメータの1行分の情報を処理します。
+ * @param str 処理する文字列
+ * @returns
+ */
+function qiitaParameterLine(
+  str: string,
+):
+  | QiitaParameterLineReturn<keyof QiitaParameter>
+  | QiitaParameterLineReturnError
+  | 'keyRegularExpression'
+  | null {
+  if (!str.includes(':')) {
+    if (keyRegularExpression.test(str)) {
+      return 'keyRegularExpression';
+    }
+    return null;
+  }
+  // 事前に:を含むかチェックしているので、nullにはならない。
+  const parse = /^ *\*? *([^: ]*) *:(.*)$/.exec(str);
+  if (parse === null) {
+    return null;
+  }
+  const key = parse[1];
+  const value = parse[2]?.trim() ?? '';
+  if (key === 'ID') {
+    if (value.length > 0) {
+      try {
+        return { key: 'ID', value: checkAndInsertQiitaId(value) };
+      } catch (e) {
+        return {
+          error: 'qiita_idは0-9かa-fの20文字で構成されている必要があります.',
+          errorType: 'qiita_id',
+        };
+      }
+    }
+    return { key: 'ID', value: null };
+  } else if (key === 'private') {
+    return { key: 'private', value: checkAndInsertBoolean(value, 'private') };
+  } else if (key === 'title') {
+    if (value.length < 256) {
+      return { key: 'title', value };
+    } else {
+      return {
+        error: `titleは255文字までしか設定できません。：${value}`,
+        errorType: 'title',
+      };
+    }
+  } else if (key === 'tags') {
+    const tags = value.split(/[,\s]+/);
+    if (tags.length > 5) {
+      return {
+        key: 'tags',
+        value: tags.slice(0, 5).map((e) => e.trim()),
+        error: `Tagsは5つまでしか設定できません。6つ目以降は無視されます。`,
+        errorType: 'tags',
+      };
+    }
+    return { key: 'tags', value: tags.map((e) => e.trim()) };
+  } else if (key === 'istweet') {
+    return { key: 'istweet', value: checkAndInsertBoolean(value, 'istweet', false) };
+  } else if (key === '') {
+    // 空白行は無視します。
+    return null;
+  }
+  return {
+    error: `qiitaパラメータ「${key}」が見つかりませんでした。このワードは無視されます。`,
+    errorType: 'null',
+  };
+}
 /**
  * qiita記事のパラメータが埋め込まれているか確認し、埋め込まれている場合は取得します。
- * @param editor 確認したいファイルエディタ
+ * @param doc 確認したいファイルエディタ
  * @param isIdErrorThenContinue 入力値にエラーがあった場合、読み込みを続行するかどうか。既定値：false
  * @returns qiita_parameterインターフェース
  */
 export function readQiitaParameter(
-  editor: vscode.TextEditor,
+  doc: vscode.TextDocument,
   isIdErrorThenContinue: boolean = false,
 ): QiitaParameter {
-  /** 開始/終了の目印となる文字列の正規表現。ちなみに「//**(*は最低10)」という文字列 */
-  const keyRegularExpression = /^\/\/\*{10,}$|^---$/;
   /** 戻り値となるオブジェクト */
-  const returnvalue: QiitaParameter = {
+  let returnvalue: QiitaParameter = {
     // eslint-disable-next-line
     ID: null,
     private: null,
@@ -30,7 +113,6 @@ export function readQiitaParameter(
   /** 終了行に到達しているか */
   let isEnded = false;
 
-  const doc = editor.document;
   for (let i = 0; i < doc.lineCount; i++) {
     /** １行を取得 */
     const text = documentRead(doc, i, i + 1).trim();
@@ -52,57 +134,27 @@ export function readQiitaParameter(
         break;
       }
     } else {
-      const strBefore = /^ ?\*? ?([^: ]*) ?:/.exec(text.replace(/ +/g, ' '));
-      let strAfter: RegExpExecArray | string | null = /^[^:]*:(.*)$/.exec(text);
-      // 整形。string型にする
-      if (strAfter && strAfter[1]) {
-        strAfter = strAfter[1].trim();
-      } else {
-        strAfter = '';
-      }
-      if (strBefore && strBefore[1]) {
-        if (strBefore[1] === 'ID') {
-          if (strAfter.length > 0) {
-            try {
-              returnvalue.ID = checkAndInsertQiitaId(strAfter);
-            } catch (e) {
-              vscode.window.showErrorMessage(
-                'qiita_idは0-9かa-fの20文字で構成されている必要があります.',
-              );
-              if (!isIdErrorThenContinue) {
-                throw new Error('ID is not safety.');
-              }
-            }
-          }
-        } else if (strBefore[1] === 'private') {
-          returnvalue.private = checkAndInsertBoolean(strAfter, 'private');
-        } else if (strBefore[1] === 'title') {
-          if (strAfter.length < 256) {
-            returnvalue.title = strAfter;
-          } else {
-            vscode.window.showErrorMessage(`titleは255文字までしか設定できません。：${strAfter}`);
-          }
-        } else if (strBefore[1] === 'tags') {
-          returnvalue.tags = strAfter.split(/[,\s]+/);
-          if (returnvalue.tags.length > 5) {
-            vscode.window.showErrorMessage(
-              `Tagsは5つまでしか設定できません。6つ目以降は無視されます。`,
-            );
-            returnvalue.tags = returnvalue.tags.slice(0, 5);
-          }
-          returnvalue.tags = returnvalue.tags.map((e) => e.trim()); // 両端の空白を消す
-        } else if (strBefore[1] === 'istweet') {
-          returnvalue.istweet = checkAndInsertBoolean(strAfter, 'istweet', false);
-        } else if (strBefore[1] === '') {
-          // 空白行は無視します。
-        } else {
-          vscode.window.showErrorMessage(
-            `qiitaパラメータ「${strBefore[1]}」が見つかりませんでした。このワードは無視されます。`,
-          );
-        }
-      } else if (keyRegularExpression.test(text)) {
+      const result = qiitaParameterLine(text);
+      console.log(result);
+      if (result === 'keyRegularExpression') {
         isEnded = true;
         returnvalue._lastRow = i + 1; // 最終行まで空白だとパラメータがpostされてしまうため
+      } else if (result) {
+        if (result.error) {
+          vscode.window.showErrorMessage(result.error);
+        }
+        if (result.errorType) {
+          if (result.errorType === 'qiita_id') {
+            if (!isIdErrorThenContinue) {
+              throw new Error('ID is not safety.');
+            }
+          }
+        }
+        if ('key' in result) {
+          const { key , value } = result;
+          const obj: Partial<QiitaParameter> = { [key]: value };
+          returnvalue = { ...returnvalue, ...obj};
+        }
       }
     }
   }

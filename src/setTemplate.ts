@@ -16,14 +16,14 @@ export function setTemplate() {
   // アクティブエディタの取得
   const editor = vscode.window.activeTextEditor;
   if (editor) {
+    const doc = editor.document;
     /** qiitaパラメータ群 */
-    const qiitaPrm: QiitaParameter = readQiitaParameter(editor, true);
+    const qiitaPrm: QiitaParameter = readQiitaParameter(doc, true);
     const _default = getTemplateDefault();
     if (_default) {
       addQiitaParameterToTemplateDefault(qiitaPrm, _default);
     }
     const param = createQiitaParameterTemplate(qiitaPrm);
-    const doc = editor.document;
     /** qiitaパラメータ群を除いた本文 */
     const body = documentRead(doc, qiitaPrm._lastRow);
 

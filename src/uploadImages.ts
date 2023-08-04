@@ -83,7 +83,7 @@ export const uploadImages = async (isExistNextCode: boolean) => {
   const activePath = editor.document.uri;
   console.log(`activePath : ${activePath}`);
 
-  const qiitaPrm = readQiitaParameter(editor, true);
+  const qiitaPrm = readQiitaParameter(editor.document, true);
   const doc = editor.document;
   const body = documentRead(doc, qiitaPrm._lastRow);
 

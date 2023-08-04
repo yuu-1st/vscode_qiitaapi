@@ -96,7 +96,7 @@ export async function qiitaPost() {
     const doc = editor.document;
 
     /** qiitaパラメータ群 */
-    let qiitaPrm: QiitaParameter | null = readQiitaParameter(editor);
+    let qiitaPrm: QiitaParameter | null = readQiitaParameter(doc);
     /** qiitaパラメータ群を除いた本文 */
     const body = documentRead(doc, qiitaPrm._lastRow);
     let sendBody: string = '';

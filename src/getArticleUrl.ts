@@ -9,7 +9,7 @@ export async function articleUrl() {
   // アクティブエディタの取得
   const editor = vscode.window.activeTextEditor;
   if (editor) {
-    let qiitaTemplate = readQiitaParameter(editor, true);
+    let qiitaTemplate = readQiitaParameter(editor.document, true);
 
     const url = getUrlFromQiitaParameter(qiitaTemplate);
     if (url) {
