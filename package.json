@@ -5,7 +5,7 @@
   "version": "0.6.1",
   "publisher": "yuuyu",
   "engines": {
-    "vscode": "^1.79.1"
+    "vscode": "^1.85.0"
   },
   "icon": "img/icon.png",
   "categories": [
