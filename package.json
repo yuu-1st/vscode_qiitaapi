@@ -4,6 +4,7 @@
   "description": "use qiita api to vscode",
   "version": "0.6.3",
   "publisher": "yuuyu",
+  "license": "MIT",
   "engines": {
     "vscode": "^1.85.0"
   },
